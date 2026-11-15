@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Folha do Stop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+/* A4 retrato, um lado por pessoa da mesa (4 cadeiras). Cores iguais às dos cards na TV. */
+@page { size: A4; margin: 0; }
+:root {
+  --tinta: #15121f;
+  --c1: oklch(72% .13 210);   /* turquesa  — temas 1 e 2 */
+  --c2: oklch(68% .19 22);    /* coral     — temas 3 e 4 */
+  --c3: oklch(80% .11 292);   /* lilás     — temas 5 e 6 */
+  --c4: oklch(86% .14 155);   /* verde     — temas 7 e 8 */
+  --canary: oklch(90% .19 103);
+  --fd: "Bungee", system-ui, sans-serif;
+  --ft: "Nunito", system-ui, sans-serif;
+}
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html, body { margin: 0; }
+body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var(--tinta); }
+.toolbar { position: sticky; top: 0; z-index: 5; display: flex; gap: 12px; justify-content: center; align-items: center; padding: 12px; background: #2a2640; color: #fff; font-size: 15px; }
+.toolbar button { font-family: var(--fd); font-size: 14px; padding: 10px 18px; border: 3px solid var(--tinta); border-radius: 999px; background: var(--canary); box-shadow: 3px 3px 0 var(--tinta); cursor: pointer; }
+.page { width: 210mm; height: 297mm; margin: 10mm auto; background: #fff; position: relative; overflow: hidden; break-after: page; }
+.page:last-child { break-after: auto; }
+@media print { body { background: #fff; } .toolbar { display: none; } .page { margin: 0; } }
+
+/* faixas de cada lado (desenhadas "em pé" e giradas para a pessoa daquele lado) */
+.strip {
+  position: absolute; display: flex; flex-direction: column; padding: 2.2mm;
+  border: .8mm solid var(--tinta); border-radius: 5mm; background: color-mix(in oklab, var(--c) 18%, #fff);
+}
+.strip .head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.6mm; }
+.strip .badge {
+  font-family: var(--fd); font-size: 3.6mm; line-height: 1; padding: 1.4mm 2.6mm 1mm; border: .6mm solid var(--tinta);
+  border-radius: 3mm; background: var(--c); white-space: nowrap;
+}
+.strip .nome { flex: 1; display: flex; align-items: flex-end; gap: 1.5mm; font-size: 3.2mm; }
+.strip .nome i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 4mm; }
+table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+th { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; background: var(--c); border: .45mm solid var(--tinta); padding: .8mm 0 .5mm; }
+td { border: .45mm solid var(--tinta); background: #fff; }
+td.r { font-family: var(--fd); font-size: 3.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
+.strip table { flex: 1; }
+
+/* centro */
+.center { position: absolute; display: flex; flex-direction: column; gap: 2mm; align-items: stretch; text-align: center; }
+.logo { font-family: var(--fd); font-size: 7.5mm; line-height: 1; padding: 2mm 0 1.4mm; background: var(--canary); border: .8mm solid var(--tinta); border-radius: 4mm; box-shadow: 1mm 1mm 0 var(--tinta); transform: rotate(-2deg); margin: 0 1mm 1mm; }
+.center .mesa { font-family: var(--fd); font-size: 3mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
+.center .mesa i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 5mm; }
+.center .lado { font-size: 2.7mm; line-height: 1.3; }
+.center table { flex: 1; --c: var(--canary); }
+.center th { font-size: 2.5mm; }
+.center td.tot { font-family: var(--fd); font-size: 3mm; background: var(--canary); text-align: center; }
+.regras { font-size: 2.5mm; line-height: 1.35; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.4mm 2mm; }
+.regras b { font-family: var(--fd); font-weight: 400; }
+</style>
+</head>
+<body>
+<div class="toolbar">Imprima em A4, frente e verso (rodadas 1–8 na frente, 9–16 no verso). <button onclick="print()">🖨 Imprimir</button></div>
+<div id="pages"></div>
+<script>
+// medidas em mm
+const PW = 210, PH = 297, M = 7, H = 70, GAP = 2;   // H = profundidade de cada faixa
+const SIDES = [ // lado: posição + rotação (o "pé" do texto aponta para quem está sentado ali)
+  {pos:"bottom", rot:0,   n:1},
+  {pos:"right",  rot:-90, n:2},
+  {pos:"top",    rot:180, n:3},
+  {pos:"left",   rot:90,  n:4},
+];
+function box(pos){
+  const W = PW - 2*M, Hm = PH - 2*M;
+  const midL = Hm - 2*H - 2*GAP;                     // comprimento das faixas laterais
+  if(pos==="bottom") return {l:M, t:PH-M-H, w:W, h:H};
+  if(pos==="top")    return {l:M, t:M, w:W, h:H};
+  const cx = pos==="left" ? M + H/2 : PW - M - H/2, cy = PH/2;
+  return {l:cx - midL/2, t:cy - H/2, w:midL, h:H};
+}
+function strip(side, from){
+  const b = box(side.pos), a = side.n*2-1;
+  let rows = "";
+  for(let r=from; r<from+8; r++) rows += `<tr><td class="r">${r}</td><td></td><td></td></tr>`;
+  return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
+    <div class="head"><span class="badge">Temas ${a} e ${a+1}</span><span class="nome">Nome:<i></i></span></div>
+    <table><colgroup><col style="width:9mm"><col><col></colgroup>
+      <tr><th>Rod.</th><th>Tema ${a}</th><th>Tema ${a+1}</th></tr>${rows}</table>
+  </div>`;
+}
+function center(from){
+  const l = M + H + GAP, w = PW - 2*l, t = M + H + GAP, h = PH - 2*t;
+  let rows = "";
+  for(let r=from; r<from+8; r++) rows += `<tr><td class="r">${r}</td><td></td><td></td></tr>`;
+  return `<div class="center" style="left:${l}mm;top:${t}mm;width:${w}mm;height:${h}mm">
+    <div class="logo">STOP!</div>
+    <div class="mesa">Mesa<i></i></div>
+    <table><colgroup><col style="width:9mm"><col><col></colgroup>
+      <tr><th>Rod.</th><th>Letra</th><th>Pontos</th></tr>${rows}
+      <tr><td class="tot" colspan="2">Total</td><td></td></tr></table>
+    <div class="regras"><b>10</b> só sua mesa · <b>5</b> repetida · <b>0</b> vazia.<br>Mesma ideia conta como repetida (traição = trair = traiu o marido).<br>Cada um preenche o seu lado: a cor e os números batem com os cards da TV.</div>
+  </div>`;
+}
+document.getElementById("pages").innerHTML = [1, 9].map(from =>
+  `<section class="page">${SIDES.map(s => strip(s, from)).join("")}${center(from)}</section>`).join("");
+</script>
+</body>
+</html>

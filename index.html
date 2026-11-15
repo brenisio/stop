@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jogos do Aniversário</title>
+<script>
+  (function(){
+    var sis = matchMedia('(prefers-color-scheme: dark)');
+    var e = null; try { e = localStorage.getItem('aniversario:tema'); } catch(x){}
+    document.documentElement.dataset.theme = (e ? e === 'escuro' : sis.matches) ? 'dark' : 'light';
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
+<link rel="stylesheet" href="tema.css">
+<style>
+body { overflow: auto; }
+main { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; padding: 6vh 16px; }
+h1 { font-size: clamp(28px, 6vh, 72px); text-align: center; }
+.jogos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; width: min(1000px, 100%); }
+a.card { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--tinta); padding: 24px; transition: transform .12s, box-shadow .12s; }
+a.card:active { box-shadow: none; transform: translate(var(--o), var(--o)); }
+a.card b { font-family: var(--fd); font-weight: 400; font-size: 26px; }
+a.card span { font-size: 16px; }
+.c1 { background: var(--turq); } .c2 { background: var(--coral); } .c3 { background: oklch(80% .11 292); }
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="tag">🎉 Jogos</span> do Aniversário</h1>
+  <div class="jogos">
+    <a class="card c1" href="stop.html"><b>🛑 Stop</b><span>Sorteia os temas e a letra, cronômetro na TV e placar por mesa.</span></a>
+    <a class="card c2" href="mentira.html"><b>🤥 Mentira Convincente</b><span>Cada mesa inventa uma resposta; todo mundo vota em qual é a verdadeira.</span></a>
+    <a class="card c3" href="folha-stop.html"><b>🖨 Folha do Stop</b><span>A4 para a mesa de 4 lugares, 16 rodadas (frente e verso)..</span></a>
+  </div>
+  <a class="btn small" href="folha-stop.pdf" download>⬇ Baixar folha em PDF</a>
+  <p class="hint">Abra no computador ligado à TV · <kbd>F</kbd> tela cheia · <kbd>espaço</kbd> avança</p>
+</main>
+</body>
+</html>
