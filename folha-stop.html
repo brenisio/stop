@@ -44,7 +44,8 @@ body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var
 table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
 th { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; background: var(--c); border: .45mm solid var(--tinta); padding: .8mm 0 .5mm; }
 td { border: .45mm solid var(--tinta); background: #fff; }
-td.r { font-family: var(--fd); font-size: 3.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
+td.l { background: #fff; border-width: .7mm; }
+td.r { font-family: var(--fd); font-size: 4.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
 .strip table { flex: 1; }
 
 /* centro */
@@ -61,7 +62,7 @@ td.r { font-family: var(--fd); font-size: 3.2mm; text-align: center; background:
 </style>
 </head>
 <body>
-<div class="toolbar">Imprima em A4, frente e verso (rodadas 1–8 na frente, 9–16 no verso). <button onclick="print()">🖨 Imprimir</button></div>
+<div class="toolbar">Imprima em A4, frente e verso (rodadas 1–4 na frente, 5–8 no verso). <button onclick="print()">🖨 Imprimir</button></div>
 <div id="pages"></div>
 <script>
 // medidas em mm
@@ -83,27 +84,27 @@ function box(pos){
 function strip(side, from){
   const b = box(side.pos), a = side.n*2-1;
   let rows = "";
-  for(let r=from; r<from+8; r++) rows += `<tr><td class="r">${r}</td><td></td><td></td></tr>`;
+  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td><td></td></tr>`;
   return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
     <div class="head"><span class="badge">Temas ${a} e ${a+1}</span><span class="nome">Nome:<i></i></span></div>
-    <table><colgroup><col style="width:9mm"><col><col></colgroup>
-      <tr><th>Rod.</th><th>Tema ${a}</th><th>Tema ${a+1}</th></tr>${rows}</table>
+    <table><colgroup><col style="width:12mm"><col style="width:16mm"><col><col></colgroup>
+      <tr><th>Rod.</th><th>Letra</th><th>Tema ${a}</th><th>Tema ${a+1}</th></tr>${rows}</table>
   </div>`;
 }
 function center(from){
   const l = M + H + GAP, w = PW - 2*l, t = M + H + GAP, h = PH - 2*t;
   let rows = "";
-  for(let r=from; r<from+8; r++) rows += `<tr><td class="r">${r}</td><td></td><td></td></tr>`;
+  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td></tr>`;
   return `<div class="center" style="left:${l}mm;top:${t}mm;width:${w}mm;height:${h}mm">
     <div class="logo">STOP!</div>
     <div class="mesa">Mesa<i></i></div>
-    <table><colgroup><col style="width:9mm"><col><col></colgroup>
+    <table><colgroup><col style="width:12mm"><col><col></colgroup>
       <tr><th>Rod.</th><th>Letra</th><th>Pontos</th></tr>${rows}
       <tr><td class="tot" colspan="2">Total</td><td></td></tr></table>
-    <div class="regras"><b>10</b> só sua mesa · <b>5</b> repetida · <b>0</b> vazia.<br>Mesma ideia conta como repetida (traição = trair = traiu o marido).<br>Cada um preenche o seu lado: a cor e os números batem com os cards da TV.</div>
+    <div class="regras"><b>10</b> só sua mesa · <b>5</b> repetida · <b>0</b> vazia.<br>Mesma ideia conta como repetida (traição = trair = traiu o marido).<br>Escreva a letra sorteada na linha da rodada, no seu lado e aqui no centro.<br>Cada um preenche o seu lado: a cor e os números batem com os cards da TV.</div>
   </div>`;
 }
-document.getElementById("pages").innerHTML = [1, 9].map(from =>
+document.getElementById("pages").innerHTML = [1, 5].map(from =>
   `<section class="page">${SIDES.map(s => strip(s, from)).join("")}${center(from)}</section>`).join("");
 </script>
 </body>
