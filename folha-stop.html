@@ -45,6 +45,9 @@ table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixe
 th { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; background: var(--c); border: .45mm solid var(--tinta); padding: .8mm 0 .5mm; }
 td { border: .45mm solid var(--tinta); background: #fff; }
 td.l { background: #fff; border-width: .7mm; }
+td.p { border-left-width: .9mm; }
+.strip tr.tl td { height: 7mm; }
+.strip td.tot { font-family: var(--fd); font-size: 3mm; text-align: right; padding-right: 2mm; background: color-mix(in oklab, var(--c) 35%, #fff); }
 td.r { font-family: var(--fd); font-size: 4.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
 .strip table { flex: 1; }
 
@@ -84,11 +87,12 @@ function box(pos){
 function strip(side, from){
   const b = box(side.pos), a = side.n*2-1;
   let rows = "";
-  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td><td></td></tr>`;
+  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td><td></td><td class="p"></td></tr>`;
   return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
     <div class="head"><span class="badge">Temas ${a} e ${a+1}</span><span class="nome">Nome:<i></i></span></div>
-    <table><colgroup><col style="width:12mm"><col style="width:16mm"><col><col></colgroup>
-      <tr><th>Rod.</th><th>Letra</th><th>Tema ${a}</th><th>Tema ${a+1}</th></tr>${rows}</table>
+    <table><colgroup><col style="width:12mm"><col style="width:16mm"><col><col><col style="width:16mm"></colgroup>
+      <tr><th>Rod.</th><th>Letra</th><th>Tema ${a}</th><th>Tema ${a+1}</th><th>Pontos</th></tr>${rows}
+      <tr class="tl"><td colspan="4" class="tot">Total</td><td class="p"></td></tr></table>
   </div>`;
 }
 function center(from){
