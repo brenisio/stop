@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
 <style>
-/* A4 retrato, um lado por pessoa da mesa (4 cadeiras). Cada um joga por si, 5 temas por rodada. */
-@page { size: A4; margin: 0; }
+/* A3 retrato, um lado por pessoa da mesa (4 cadeiras). Cada um joga por si, 5 temas por rodada. */
+@page { size: A3; margin: 0; }
 :root {
   --tinta: #15121f;
   --c1: oklch(72% .13 210);   /* turquesa */
@@ -25,7 +25,7 @@ html, body { margin: 0; }
 body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var(--tinta); }
 .toolbar { position: sticky; top: 0; z-index: 5; display: flex; gap: 12px; justify-content: center; align-items: center; padding: 12px; background: #2a2640; color: #fff; font-size: 15px; }
 .toolbar button { font-family: var(--fd); font-size: 14px; padding: 10px 18px; border: 3px solid var(--tinta); border-radius: 999px; background: var(--canary); box-shadow: 3px 3px 0 var(--tinta); cursor: pointer; }
-.page { width: 210mm; height: 297mm; margin: 10mm auto; background: #fff; position: relative; overflow: hidden; break-after: page; }
+.page { width: 297mm; height: 420mm; margin: 10mm auto; background: #fff; position: relative; overflow: hidden; break-after: page; }
 .page:last-child { break-after: auto; }
 @media print { body { background: #fff; } .toolbar { display: none; } .page { margin: 0; } }
 
@@ -35,38 +35,38 @@ body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var
   border: .8mm solid var(--tinta); border-radius: 5mm; background: color-mix(in oklab, var(--c) 18%, #fff);
 }
 .strip .head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.4mm; }
-.strip .nome { flex: 1; white-space: nowrap; display: flex; align-items: flex-end; gap: 1.5mm; font-family: var(--fd); font-size: 3mm; }
-.strip .nome i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 4.5mm; }
-.strip .total { white-space: nowrap; display: flex; align-items: center; gap: 1.5mm; font-family: var(--fd); font-size: 3mm; }
-.strip .total i { width: 14mm; height: 6.5mm; border: .6mm solid var(--tinta); border-radius: 2mm; background: #fff; }
+.strip .nome { flex: 1; white-space: nowrap; display: flex; align-items: flex-end; gap: 2mm; font-family: var(--fd); font-size: 4.2mm; }
+.strip .nome i { flex: 1; border-bottom: .45mm solid var(--tinta); height: 6mm; }
+.strip .total { white-space: nowrap; display: flex; align-items: center; gap: 2mm; font-family: var(--fd); font-size: 4.2mm; }
+.strip .total i { width: 20mm; height: 9mm; border: .6mm solid var(--tinta); border-radius: 2mm; background: #fff; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .strip table { flex: 1; height: 100%; }
 th, td { border: .45mm solid var(--tinta); }
-th { font-family: var(--fd); font-weight: 400; font-size: 2.7mm; background: var(--c); padding: .6mm 0 .3mm; }
+th { font-family: var(--fd); font-weight: 400; font-size: 3.8mm; background: var(--c); padding: .6mm 0 .3mm; }
 td { background: #fff; }
-td.k { font-family: var(--fd); font-size: 2.4mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
-td.k.n { font-size: 3.6mm; }
+td.k { font-family: var(--fd); font-size: 3.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
+td.k.n { font-size: 5mm; }
 tr.letra td:not(.k) { border-width: .7mm; }
 tr.pts td { border-top-width: .9mm; }
 
 /* centro */
 .center { position: absolute; display: flex; flex-direction: column; gap: 2.2mm; text-align: center; }
-.logo { font-family: var(--fd); font-size: 7.5mm; line-height: 1; padding: 2mm 0 1.4mm; background: var(--canary); border: .8mm solid var(--tinta); border-radius: 4mm; box-shadow: 1mm 1mm 0 var(--tinta); transform: rotate(-2deg); margin: 0 1mm 1mm; }
-.linha { font-family: var(--fd); font-size: 2.8mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
-.linha i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 5mm; }
+.logo { font-family: var(--fd); font-size: 11mm; line-height: 1; padding: 2mm 0 1.4mm; background: var(--canary); border: .8mm solid var(--tinta); border-radius: 4mm; box-shadow: 1mm 1mm 0 var(--tinta); transform: rotate(-2deg); margin: 0 1mm 1mm; }
+.linha { font-family: var(--fd); font-size: 4mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
+.linha i { flex: 1; border-bottom: .45mm solid var(--tinta); height: 7mm; }
 .vencedor { border: .7mm solid var(--tinta); border-radius: 3mm; background: var(--canary); padding: 1.6mm 2mm 2.4mm; text-align: left; }
-.vencedor b { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; display: block; }
-.vencedor i { display: block; border-bottom: .35mm solid var(--tinta); height: 6mm; }
-.regras { flex: 1; font-size: 2.5mm; line-height: 1.38; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.6mm 2mm; }
+.vencedor b { font-family: var(--fd); font-weight: 400; font-size: 4mm; display: block; }
+.vencedor i { display: block; border-bottom: .45mm solid var(--tinta); height: 9mm; }
+.regras { flex: 1; font-size: 3.6mm; line-height: 1.38; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.6mm 2mm; }
 .regras b { font-family: var(--fd); font-weight: 400; }
 </style>
 </head>
 <body>
-<div class="toolbar">Imprima em A4, frente e verso (rodadas 1–4 na frente, 5–8 no verso). <button onclick="print()">🖨 Imprimir</button></div>
+<div class="toolbar">Imprima em A3, frente e verso (rodadas 1–4 na frente, 5–8 no verso). <button onclick="print()">🖨 Imprimir</button></div>
 <div id="pages"></div>
 <script>
 // medidas em mm
-const PW = 210, PH = 297, M = 7, H = 72, GAP = 2;   // H = profundidade de cada faixa
+const PW = 297, PH = 420, M = 8, H = 100, GAP = 3;   // H = profundidade de cada faixa
 const TEMAS = 5, RODADAS = 4;
 const SIDES = [ // lado: posição + rotação (o "pé" do texto aponta para quem está sentado ali)
   {pos:"bottom", rot:0,   n:1},
@@ -92,7 +92,7 @@ function strip(side, from){
   rows += `<tr class="pts"><td class="k">Pontos</td>${cells()}</tr>`;
   return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
     <div class="head"><span class="nome">Nome<i></i></span><span class="total">Total<i></i></span></div>
-    <table><colgroup><col style="width:12mm">${rods.map(()=>"<col>").join("")}</colgroup>${rows}</table>
+    <table><colgroup><col style="width:17mm">${rods.map(()=>"<col>").join("")}</colgroup>${rows}</table>
   </div>`;
 }
 function center(){
