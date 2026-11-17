@@ -8,14 +8,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
 <style>
-/* A4 retrato, um lado por pessoa da mesa (4 cadeiras). Cores iguais às dos cards na TV. */
+/* A4 retrato, um lado por pessoa da mesa (4 cadeiras). Cada um joga por si, 5 temas por rodada. */
 @page { size: A4; margin: 0; }
 :root {
   --tinta: #15121f;
-  --c1: oklch(72% .13 210);   /* turquesa  — temas 1 e 2 */
-  --c2: oklch(68% .19 22);    /* coral     — temas 3 e 4 */
-  --c3: oklch(80% .11 292);   /* lilás     — temas 5 e 6 */
-  --c4: oklch(86% .14 155);   /* verde     — temas 7 e 8 */
+  --c1: oklch(72% .13 210);   /* turquesa */
+  --c2: oklch(68% .19 22);    /* coral    */
+  --c3: oklch(80% .11 292);   /* lilás    */
+  --c4: oklch(86% .14 155);   /* verde    */
   --canary: oklch(90% .19 103);
   --fd: "Bungee", system-ui, sans-serif;
   --ft: "Nunito", system-ui, sans-serif;
@@ -29,38 +29,35 @@ body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var
 .page:last-child { break-after: auto; }
 @media print { body { background: #fff; } .toolbar { display: none; } .page { margin: 0; } }
 
-/* faixas de cada lado (desenhadas "em pé" e giradas para a pessoa daquele lado) */
+/* faixa de cada pessoa (desenhada "em pé" e girada para quem senta daquele lado) */
 .strip {
-  position: absolute; display: flex; flex-direction: column; padding: 2.2mm;
+  position: absolute; display: flex; flex-direction: column; padding: 2mm;
   border: .8mm solid var(--tinta); border-radius: 5mm; background: color-mix(in oklab, var(--c) 18%, #fff);
 }
-.strip .head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.6mm; }
-.strip .badge {
-  font-family: var(--fd); font-size: 3.6mm; line-height: 1; padding: 1.4mm 2.6mm 1mm; border: .6mm solid var(--tinta);
-  border-radius: 3mm; background: var(--c); white-space: nowrap;
-}
-.strip .nome { flex: 1; display: flex; align-items: flex-end; gap: 1.5mm; font-size: 3.2mm; }
-.strip .nome i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 4mm; }
-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-th { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; background: var(--c); border: .45mm solid var(--tinta); padding: .8mm 0 .5mm; }
-td { border: .45mm solid var(--tinta); background: #fff; }
-td.l { background: #fff; border-width: .7mm; }
-td.p { border-left-width: .9mm; }
-.strip tr.tl td { height: 7mm; }
-.strip td.tot { font-family: var(--fd); font-size: 3mm; text-align: right; padding-right: 2mm; background: color-mix(in oklab, var(--c) 35%, #fff); }
-td.r { font-family: var(--fd); font-size: 4.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
-.strip table { flex: 1; }
+.strip .head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.4mm; }
+.strip .nome { flex: 1; white-space: nowrap; display: flex; align-items: flex-end; gap: 1.5mm; font-family: var(--fd); font-size: 3mm; }
+.strip .nome i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 4.5mm; }
+.strip .total { white-space: nowrap; display: flex; align-items: center; gap: 1.5mm; font-family: var(--fd); font-size: 3mm; }
+.strip .total i { width: 14mm; height: 6.5mm; border: .6mm solid var(--tinta); border-radius: 2mm; background: #fff; }
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.strip table { flex: 1; height: 100%; }
+th, td { border: .45mm solid var(--tinta); }
+th { font-family: var(--fd); font-weight: 400; font-size: 2.7mm; background: var(--c); padding: .6mm 0 .3mm; }
+td { background: #fff; }
+td.k { font-family: var(--fd); font-size: 2.4mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
+td.k.n { font-size: 3.6mm; }
+tr.letra td:not(.k) { border-width: .7mm; }
+tr.pts td { border-top-width: .9mm; }
 
 /* centro */
-.center { position: absolute; display: flex; flex-direction: column; gap: 2mm; align-items: stretch; text-align: center; }
+.center { position: absolute; display: flex; flex-direction: column; gap: 2.2mm; text-align: center; }
 .logo { font-family: var(--fd); font-size: 7.5mm; line-height: 1; padding: 2mm 0 1.4mm; background: var(--canary); border: .8mm solid var(--tinta); border-radius: 4mm; box-shadow: 1mm 1mm 0 var(--tinta); transform: rotate(-2deg); margin: 0 1mm 1mm; }
-.center .mesa { font-family: var(--fd); font-size: 3mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
-.center .mesa i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 5mm; }
-.center .lado { font-size: 2.7mm; line-height: 1.3; }
-.center table { flex: 1; --c: var(--canary); }
-.center th { font-size: 2.5mm; }
-.center td.tot { font-family: var(--fd); font-size: 3mm; background: var(--canary); text-align: center; }
-.regras { font-size: 2.5mm; line-height: 1.35; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.4mm 2mm; }
+.linha { font-family: var(--fd); font-size: 2.8mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
+.linha i { flex: 1; border-bottom: .35mm solid var(--tinta); height: 5mm; }
+.vencedor { border: .7mm solid var(--tinta); border-radius: 3mm; background: var(--canary); padding: 1.6mm 2mm 2.4mm; text-align: left; }
+.vencedor b { font-family: var(--fd); font-weight: 400; font-size: 2.8mm; display: block; }
+.vencedor i { display: block; border-bottom: .35mm solid var(--tinta); height: 6mm; }
+.regras { flex: 1; font-size: 2.5mm; line-height: 1.38; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.6mm 2mm; }
 .regras b { font-family: var(--fd); font-weight: 400; }
 </style>
 </head>
@@ -69,7 +66,8 @@ td.r { font-family: var(--fd); font-size: 4.2mm; text-align: center; background:
 <div id="pages"></div>
 <script>
 // medidas em mm
-const PW = 210, PH = 297, M = 7, H = 70, GAP = 2;   // H = profundidade de cada faixa
+const PW = 210, PH = 297, M = 7, H = 72, GAP = 2;   // H = profundidade de cada faixa
+const TEMAS = 5, RODADAS = 4;
 const SIDES = [ // lado: posição + rotação (o "pé" do texto aponta para quem está sentado ali)
   {pos:"bottom", rot:0,   n:1},
   {pos:"right",  rot:-90, n:2},
@@ -84,32 +82,33 @@ function box(pos){
   const cx = pos==="left" ? M + H/2 : PW - M - H/2, cy = PH/2;
   return {l:cx - midL/2, t:cy - H/2, w:midL, h:H};
 }
+// linhas = temas, colunas = rodadas
 function strip(side, from){
-  const b = box(side.pos), a = side.n*2-1;
-  let rows = "";
-  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td><td></td><td class="p"></td></tr>`;
+  const b = box(side.pos), rods = Array.from({length:RODADAS}, (_,i) => from+i);
+  const cells = () => rods.map(() => `<td></td>`).join("");
+  let rows = `<tr><th></th>${rods.map(r => `<th>Rodada ${r}</th>`).join("")}</tr>`;
+  rows += `<tr class="letra"><td class="k">Letra</td>${cells()}</tr>`;
+  for(let t=1; t<=TEMAS; t++) rows += `<tr><td class="k n">${t}</td>${cells()}</tr>`;
+  rows += `<tr class="pts"><td class="k">Pontos</td>${cells()}</tr>`;
   return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
-    <div class="head"><span class="badge">Temas ${a} e ${a+1}</span><span class="nome">Nome:<i></i></span></div>
-    <table><colgroup><col style="width:12mm"><col style="width:16mm"><col><col><col style="width:16mm"></colgroup>
-      <tr><th>Rod.</th><th>Letra</th><th>Tema ${a}</th><th>Tema ${a+1}</th><th>Pontos</th></tr>${rows}
-      <tr class="tl"><td colspan="4" class="tot">Total</td><td class="p"></td></tr></table>
+    <div class="head"><span class="nome">Nome<i></i></span><span class="total">Total<i></i></span></div>
+    <table><colgroup><col style="width:12mm">${rods.map(()=>"<col>").join("")}</colgroup>${rows}</table>
   </div>`;
 }
-function center(from){
+function center(){
   const l = M + H + GAP, w = PW - 2*l, t = M + H + GAP, h = PH - 2*t;
-  let rows = "";
-  for(let r=from; r<from+4; r++) rows += `<tr><td class="r">${r}</td><td class="l"></td><td></td></tr>`;
   return `<div class="center" style="left:${l}mm;top:${t}mm;width:${w}mm;height:${h}mm">
     <div class="logo">STOP!</div>
-    <div class="mesa">Mesa<i></i></div>
-    <table><colgroup><col style="width:12mm"><col><col></colgroup>
-      <tr><th>Rod.</th><th>Letra</th><th>Pontos</th></tr>${rows}
-      <tr><td class="tot" colspan="2">Total</td><td></td></tr></table>
-    <div class="regras"><b>10</b> só sua mesa · <b>5</b> repetida · <b>0</b> vazia.<br>Mesma ideia conta como repetida (dançar = dança = dançou no casamento).<br>Escreva a letra sorteada na linha da rodada, no seu lado e aqui no centro.<br>Cada um preenche o seu lado: a cor e os números batem com os cards da TV.</div>
+    <div class="linha">Mesa<i></i></div>
+    <div class="vencedor"><b>🏆 Vai pra final:</b><i></i></div>
+    <div class="regras">Cada um joga por si. Os números <b>1–5</b> são os temas da TV.<br><br>
+      Comparando só com a sua mesa:<br><b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia.<br><br>
+      Mesma ideia conta como repetida (dançar = dança = dançou no casamento).<br><br>
+      Quem somar mais vai pra final.</div>
   </div>`;
 }
-document.getElementById("pages").innerHTML = [1, 5].map(from =>
-  `<section class="page">${SIDES.map(s => strip(s, from)).join("")}${center(from)}</section>`).join("");
+document.getElementById("pages").innerHTML = [1, 1+RODADAS].map(from =>
+  `<section class="page">${SIDES.map(s => strip(s, from)).join("")}${center()}</section>`).join("");
 </script>
 </body>
 </html>

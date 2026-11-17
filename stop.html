@@ -41,9 +41,10 @@
 .cats li.pop { animation: pop .35s ease-out; }
 /* cada tema num cartão colorido (texto sempre na tinta escura, nítido nos dois temas) */
 .cats li { --c: var(--turq); background: var(--c); color: var(--tinta); }
-.cats li:nth-child(4n+2) { --c: var(--coral); }
-.cats li:nth-child(4n+3) { --c: oklch(80% .11 292); }
-.cats li:nth-child(4n+4) { --c: oklch(86% .14 155); }
+.cats li:nth-child(5n+2) { --c: var(--coral); }
+.cats li:nth-child(5n+3) { --c: oklch(80% .11 292); }
+.cats li:nth-child(5n+4) { --c: oklch(86% .14 155); }
+.cats li:nth-child(5n+5) { --c: oklch(90% .19 103); }
 .cats li .t { color: var(--tinta); }
 .cats .row { display: flex; align-items: center; gap: .5em; padding: .2em 0; min-width: 0; }
 .cats .row + .row { border-top: var(--bf) dashed var(--tinta); }
@@ -88,7 +89,7 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
   </div>
   <div class="cfg">
     <div class="card">
-      <label>Mesas / equipes (uma por linha)
+      <label>Finalistas (um por linha) · placar na TV, só pra final
         <textarea id="cfgTeams" rows="8"></textarea>
       </label>
       <div class="cols">
@@ -100,8 +101,10 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
         <input id="cfgLetters">
       </label>
       <p class="nota" style="margin:0">
-        <b>Como funciona:</b> sorteia os temas, depois a letra. Cada mesa preenche no papel até o tempo acabar
-        (ou alguém gritar STOP). Na pontuação: <b>10</b> resposta só daquela mesa, <b>5</b> repetida, <b>0</b> vazia ou inválida.<br>
+        <b>Como funciona:</b> sorteia os temas, depois a letra. Cada um joga por si e preenche o seu lado da folha
+        até o tempo acabar (ou alguém gritar STOP). Cada mesa pontua no papel, comparando só entre si:
+        <b>10</b> resposta só sua, <b>5</b> repetida, <b>0</b> vazia ou inválida. O primeiro de cada mesa vai pra final,
+        que é pontuada aqui na TV com o botão 📝.<br>
         Tempo 0 = sem cronômetro. Letras e temas não se repetem até acabar o estoque.<br>
         Atalhos: <kbd>espaço</kbd> ação principal · <kbd>F</kbd> tela cheia.
       </p>
@@ -143,7 +146,7 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
     </div>
   </div>
   <div class="legend">Toque para alternar:
-    <span><b style="background:var(--turq)">10</b> só essa mesa</span>
+    <span><b style="background:var(--turq)">10</b> só ele</span>
     <span><b style="background:var(--canary)">5</b> repetida</span>
     <span><b style="background:var(--surface2);color:var(--muted)">–</b> vazia / inválida</span>
   </div>
@@ -191,10 +194,10 @@ const $ = s => document.querySelector(s);
 
 function defaults(){
   return {
-    teams: [1,2,3,4,5,6].map(i => ({name:"Mesa "+i, score:0, last:0})),
-    time: 120, numCats: 8, letters: "ABCDEFGHIJLMNOPRSTUVZ",
+    teams: [1,2,3,4,5,6].map(i => ({name:"Finalista "+i, score:0, last:0})),
+    time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 2
+    round: 1, current: null, phase: "setup", v: 3
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -205,6 +208,11 @@ if(!S.v){ // migração da 1ª versão: mais temas por rodada e estoque novo
   S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
   if(S.current && !S.current.ended) S.current = null;
   S.v = 2;
+}
+if(S.v < 3){ // cada um por si: 5 temas por rodada, placar da TV só pra final
+  S.numCats = 5;
+  if(S.current && !S.current.ended) S.current = null;
+  S.v = 3;
 }
 
 /* ---------- utils ---------- */
@@ -253,11 +261,11 @@ function renderSetup(){
 function updateCatCount(){ $("#catCount").textContent = $("#cfgCats").value.split("\n").filter(l=>l.trim()).length + " temas"; }
 function applySetup(){
   const names = $("#cfgTeams").value.split("\n").map(s=>s.trim()).filter(Boolean);
-  if(!names.length){ alert("Coloque pelo menos uma mesa."); return false; }
+  if(!names.length){ alert("Coloque pelo menos um finalista."); return false; }
   const old = Object.fromEntries(S.teams.map(t=>[t.name,t]));
   S.teams = names.map(n => old[n] ? old[n] : {name:n, score:0, last:0});
   S.time = Math.max(0, parseInt($("#cfgTime").value)||0);
-  const num = Math.min(12, Math.max(1, parseInt($("#cfgNum").value)||8));
+  const num = Math.min(12, Math.max(1, parseInt($("#cfgNum").value)||5));
   if(num !== S.numCats) S.current = null;
   S.numCats = num;
   S.round = Math.max(1, parseInt($("#cfgRound").value)||1);
@@ -303,12 +311,11 @@ function setLetter(l){
   el.classList.toggle("espera", !l);
 }
 function drawCatList(cats){
-  // temas em duplas (1+2, 3+4…): cada pessoa da mesa preenche uma dupla
-  const groups = []; for(let i=0;i<cats.length;i+=2) groups.push(cats.slice(i,i+2));
+  // um cartão por tema; o número é a linha na folha
   const ul = $("#rCats");
-  ul.style.gridTemplateColumns = `repeat(${groups.length > 2 ? 2 : 1},minmax(0,1fr))`;
-  ul.innerHTML = groups.map((g,gi)=>`<li>${g.map((c,j)=>
-    `<div class="row"><span class="n">${gi*2+j+1}</span><span class="t">${esc(c)}</span></div>`).join("")}</li>`).join("");
+  ul.style.gridTemplateColumns = `repeat(${cats.length > 6 ? 2 : 1},minmax(0,1fr))`;
+  ul.innerHTML = cats.map((c,i)=>
+    `<li><div class="row"><span class="n">${i+1}</span><span class="t">${esc(c)}</span></div></li>`).join("");
   fitCats();
 }
 // maior fonte em que todos os temas cabem (usa o tema mais longo do estoque durante o sorteio)
@@ -344,13 +351,14 @@ function renderRoundBtns(){
     paused:  `<button class="btn" data-a="stop">✋ Encerrar</button>
               <button class="btn primary" data-primary data-a="resume">▶ Continuar</button>`,
     ended:   `<button class="btn" data-a="settings">⚙ Config</button>
-              <button class="btn primary" data-primary data-a="score">📝 Pontuar</button>`
+              <button class="btn" data-a="score">📝 Pontuar na TV (final)</button>
+              <button class="btn primary" data-primary data-a="next">▶ Próxima rodada</button>`
   }[rstate];
 }
 $("#rBtns").addEventListener("click", e => {
   const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
   ({cats:drawCats, letter:drawLetter, start:startTimer, pause:pauseTimer, resume:resumeTimer,
-    stop:endRound, score:enterScore, settings:renderSetup})[a]();
+    stop:endRound, score:enterScore, next:nextRound, settings:renderSetup})[a]();
 });
 
 function spin(el, pool, final, total, onTick, done){
@@ -432,7 +440,10 @@ function endRound(){
 }
 $("#stopOverlay").onclick = () => $("#stopOverlay").classList.remove("show");
 
-/* ---------- pontuação ---------- */
+// pontuação feita no papel, em cada mesa
+function nextRound(){ S.current = null; S.round++; save(); enterRound(); }
+
+/* ---------- pontuação (final) ---------- */
 function enterScore(){
   const c = S.current, n = c.cats.length;
   if(!c.points || c.points.length !== S.teams.length) c.points = S.teams.map(() => Array(n).fill(0));
@@ -441,7 +452,7 @@ function enterScore(){
 }
 function renderScore(){
   const c = S.current;
-  let h = `<tr><th class="team">Mesa</th>${c.cats.map((x,i)=>`<th>${i+1}. ${esc(x)}</th>`).join("")}<th>Total</th></tr>`;
+  let h = `<tr><th class="team">Finalista</th>${c.cats.map((x,i)=>`<th>${i+1}. ${esc(x)}</th>`).join("")}<th>Total</th></tr>`;
   S.teams.forEach((t,ti) => {
     h += `<tr><td class="team">${esc(t.name)}</td>` +
       c.points[ti].map((v,ci)=>`<td><button class="pt" data-t="${ti}" data-c="${ci}" data-v="${v}">${v||"–"}</button></td>`).join("") +
