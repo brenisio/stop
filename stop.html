@@ -52,7 +52,7 @@
 .cats .row { display: flex; align-items: center; gap: .5em; padding: .2em 0; min-width: 0; }
 .cats .row + .row { border-top: var(--bf) dashed var(--tinta); }
 .cats .row.pop { animation: pop .35s ease-out; }
-.cats .row.girando .t { color: var(--tinta); opacity: .55; }
+.cats .row.girando .t { color: var(--tinta); opacity: .55; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* girando não quebra linha */
 /* número do tema = coluna da folha: selo escuro, número claro, centralizado */
 .cats .n {
   flex: none; width: 1.75em; height: 1.75em; border-radius: .45em; display: flex; align-items: center; justify-content: center;
@@ -328,6 +328,12 @@ function fitCats(){
   ul.style.fontSize = lo + "vh";
 }
 addEventListener("resize", fitCats);
+// reajusta quando a fonte do site termina de carregar ou a área dos temas muda de tamanho
+document.fonts && document.fonts.ready.then(fitCats);
+document.fonts && document.fonts.addEventListener("loadingdone", fitCats);
+if(window.ResizeObserver){ let w = 0, h = 0; new ResizeObserver(([e]) => {
+  const r = e.contentRect; if(Math.abs(r.width-w) > 1 || Math.abs(r.height-h) > 1){ w = r.width; h = r.height; fitCats(); }
+}).observe($("#rCats")); }
 function showTime(ms){
   const el = $("#rTimer"), pr = $("#rProg");
   if(!S.time){ el.textContent = ""; pr.style.visibility = "hidden"; return; }
