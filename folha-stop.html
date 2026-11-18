@@ -8,107 +8,66 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
 <style>
-/* A3 retrato, um lado por pessoa da mesa (4 cadeiras). Cada um joga por si, 5 temas por rodada. */
-@page { size: A3; margin: 0; }
-:root {
-  --tinta: #15121f;
-  --c1: oklch(72% .13 210);   /* turquesa */
-  --c2: oklch(68% .19 22);    /* coral    */
-  --c3: oklch(80% .11 292);   /* lilás    */
-  --c4: oklch(86% .14 155);   /* verde    */
-  --canary: oklch(90% .19 103);
-  --fd: "Bungee", system-ui, sans-serif;
-  --ft: "Nunito", system-ui, sans-serif;
-}
-* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+/* Folha individual, A4 deitado, preto e branco. Frente: rodadas normais. Verso: final. */
+@page { size: A4 landscape; margin: 0; }
+:root { --tinta: #000; --fd: "Bungee", system-ui, sans-serif; --ft: "Nunito", system-ui, sans-serif; }
+* { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: #8a8799; font-family: var(--ft); font-weight: 700; color: var(--tinta); }
-.toolbar { position: sticky; top: 0; z-index: 5; display: flex; gap: 12px; justify-content: center; align-items: center; padding: 12px; background: #2a2640; color: #fff; font-size: 15px; }
-.toolbar button { font-family: var(--fd); font-size: 14px; padding: 10px 18px; border: 3px solid var(--tinta); border-radius: 999px; background: var(--canary); box-shadow: 3px 3px 0 var(--tinta); cursor: pointer; }
-.page { width: 297mm; height: 420mm; margin: 10mm auto; background: #fff; position: relative; overflow: hidden; break-after: page; }
+body { background: #888; font-family: var(--ft); font-weight: 700; color: var(--tinta); }
+.toolbar { position: sticky; top: 0; z-index: 5; display: flex; gap: 12px; justify-content: center; align-items: center; padding: 12px; background: #222; color: #fff; font-size: 15px; }
+.toolbar button { font-family: var(--fd); font-size: 14px; padding: 10px 18px; border: 3px solid #000; border-radius: 999px; background: #fff; cursor: pointer; }
+.page { width: 297mm; height: 210mm; margin: 10mm auto; background: #fff; padding: 9mm 10mm; display: flex; flex-direction: column; gap: 3mm; break-after: page; overflow: hidden; }
 .page:last-child { break-after: auto; }
 @media print { body { background: #fff; } .toolbar { display: none; } .page { margin: 0; } }
 
-/* faixa de cada pessoa (desenhada "em pé" e girada para quem senta daquele lado) */
-.strip {
-  position: absolute; display: flex; flex-direction: column; padding: 2mm;
-  border: .8mm solid var(--tinta); border-radius: 5mm; background: color-mix(in oklab, var(--c) 18%, #fff);
-}
-.strip .head { display: flex; align-items: center; gap: 2.5mm; margin-bottom: 1.4mm; }
-.strip .nome { flex: 1; white-space: nowrap; display: flex; align-items: flex-end; gap: 2mm; font-family: var(--fd); font-size: 4.2mm; }
-.strip .nome i { flex: 1; border-bottom: .45mm solid var(--tinta); height: 6mm; }
-.strip .total { white-space: nowrap; display: flex; align-items: center; gap: 2mm; font-family: var(--fd); font-size: 4.2mm; }
-.strip .total i { width: 20mm; height: 9mm; border: .6mm solid var(--tinta); border-radius: 2mm; background: #fff; }
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-.strip table { flex: 1; height: 100%; }
-th, td { border: .45mm solid var(--tinta); }
-th { font-family: var(--fd); font-weight: 400; font-size: 3.8mm; background: var(--c); padding: .6mm 0 .3mm; }
-td { background: #fff; }
-td.k { font-family: var(--fd); font-size: 3.2mm; text-align: center; background: color-mix(in oklab, var(--c) 35%, #fff); }
-td.k.n { font-size: 5mm; }
-tr.letra td:not(.k) { border-width: .7mm; }
-tr.pts td { border-top-width: .9mm; }
-
-/* centro */
-.center { position: absolute; display: flex; flex-direction: column; gap: 2.2mm; text-align: center; }
-.logo { font-family: var(--fd); font-size: 11mm; line-height: 1; padding: 2mm 0 1.4mm; background: var(--canary); border: .8mm solid var(--tinta); border-radius: 4mm; box-shadow: 1mm 1mm 0 var(--tinta); transform: rotate(-2deg); margin: 0 1mm 1mm; }
-.linha { font-family: var(--fd); font-size: 4mm; text-align: left; display: flex; align-items: flex-end; gap: 1.5mm; }
-.linha i { flex: 1; border-bottom: .45mm solid var(--tinta); height: 7mm; }
-.vencedor { border: .7mm solid var(--tinta); border-radius: 3mm; background: var(--canary); padding: 1.6mm 2mm 2.4mm; text-align: left; }
-.vencedor b { font-family: var(--fd); font-weight: 400; font-size: 4mm; display: block; }
-.vencedor i { display: block; border-bottom: .45mm solid var(--tinta); height: 9mm; }
-.regras { flex: 1; font-size: 3.6mm; line-height: 1.38; text-align: left; border: .45mm dashed var(--tinta); border-radius: 2.5mm; padding: 1.6mm 2mm; }
+.head { display: flex; align-items: center; gap: 6mm; }
+.logo { font-family: var(--fd); font-size: 10mm; line-height: 1; padding: 1.6mm 4mm 1mm; border: .8mm solid var(--tinta); border-radius: 3mm; transform: rotate(-2deg); }
+.logo small { font-size: .5em; }
+.campo { font-family: var(--fd); font-size: 4.2mm; display: flex; align-items: flex-end; gap: 2mm; }
+.campo i { border-bottom: .45mm solid var(--tinta); height: 7mm; }
+.campo.nome { flex: 1; } .campo.nome i { flex: 1; }
+.campo.mesa i { width: 22mm; }
+.regras { font-size: 3.5mm; line-height: 1.35; border: .4mm dashed var(--tinta); border-radius: 2mm; padding: 1.4mm 3mm; }
 .regras b { font-family: var(--fd); font-weight: 400; }
+
+table { width: 100%; flex: 1; border-collapse: collapse; table-layout: fixed; }
+th, td { border: .45mm solid var(--tinta); }
+th { font-family: var(--fd); font-weight: 400; font-size: 4mm; height: 9mm; padding: .6mm 0 0; background: #e6e6e6; }
+th.peq { font-size: 3.2mm; }
+td.k { font-family: var(--fd); font-size: 4mm; text-align: center; background: #f2f2f2; }
+td.letra { border-width: .7mm; }
+td.pts { border-left-width: .9mm; }
+tr.total td { border-top-width: .9mm; height: 12mm; }
+tr.total td.rot { font-family: var(--fd); font-size: 4.4mm; text-align: right; padding-right: 3mm; border: 0; }
+.final .logo { background: #000; color: #fff; }
 </style>
 </head>
 <body>
-<div class="toolbar">Imprima em A3, frente e verso (rodadas 1–4 na frente, 5–8 no verso). <button onclick="print()">🖨 Imprimir</button></div>
+<div class="toolbar">Imprima em A4, frente e verso, uma folha por pessoa. Frente: rodadas · verso: final. <button onclick="print()">🖨 Imprimir</button></div>
 <div id="pages"></div>
 <script>
-// medidas em mm
-const PW = 297, PH = 420, M = 8, H = 100, GAP = 3;   // H = profundidade de cada faixa
-const TEMAS = 5, RODADAS = 4;
-const SIDES = [ // lado: posição + rotação (o "pé" do texto aponta para quem está sentado ali)
-  {pos:"bottom", rot:0,   n:1},
-  {pos:"right",  rot:-90, n:2},
-  {pos:"top",    rot:180, n:3},
-  {pos:"left",   rot:90,  n:4},
-];
-function box(pos){
-  const W = PW - 2*M, Hm = PH - 2*M;
-  const midL = Hm - 2*H - 2*GAP;                     // comprimento das faixas laterais
-  if(pos==="bottom") return {l:M, t:PH-M-H, w:W, h:H};
-  if(pos==="top")    return {l:M, t:M, w:W, h:H};
-  const cx = pos==="left" ? M + H/2 : PW - M - H/2, cy = PH/2;
-  return {l:cx - midL/2, t:cy - H/2, w:midL, h:H};
+const TEMAS = 5, RODADAS = 7, FINAL = 3;
+const cols = `<colgroup><col style="width:19mm"><col style="width:16mm">${"<col>".repeat(TEMAS)}<col style="width:20mm"></colgroup>`;
+const thead = `<tr><th class="peq">Rodada</th><th class="peq">Letra</th>${Array.from({length:TEMAS},(_,i)=>`<th>Tema ${i+1}</th>`).join("")}<th class="peq">Pontos</th></tr>`;
+function linhas(n){
+  let r = "";
+  for(let i=1; i<=n; i++) r += `<tr><td class="k">${i}</td><td class="letra"></td>${"<td></td>".repeat(TEMAS)}<td class="pts"></td></tr>`;
+  return r + `<tr class="total"><td class="rot" colspan="${TEMAS+2}">Total</td><td class="pts"></td></tr>`;
 }
-// linhas = temas, colunas = rodadas
-function strip(side, from){
-  const b = box(side.pos), rods = Array.from({length:RODADAS}, (_,i) => from+i);
-  const cells = () => rods.map(() => `<td></td>`).join("");
-  let rows = `<tr><th></th>${rods.map(r => `<th>Rodada ${r}</th>`).join("")}</tr>`;
-  rows += `<tr class="letra"><td class="k">Letra</td>${cells()}</tr>`;
-  for(let t=1; t<=TEMAS; t++) rows += `<tr><td class="k n">${t}</td>${cells()}</tr>`;
-  rows += `<tr class="pts"><td class="k">Pontos</td>${cells()}</tr>`;
-  return `<div class="strip" style="--c:var(--c${side.n});left:${b.l}mm;top:${b.t}mm;width:${b.w}mm;height:${b.h}mm;transform:rotate(${side.rot}deg)">
-    <div class="head"><span class="nome">Nome<i></i></span><span class="total">Total<i></i></span></div>
-    <table><colgroup><col style="width:17mm">${rods.map(()=>"<col>").join("")}</colgroup>${rows}</table>
-  </div>`;
-}
-function center(){
-  const l = M + H + GAP, w = PW - 2*l, t = M + H + GAP, h = PH - 2*t;
-  return `<div class="center" style="left:${l}mm;top:${t}mm;width:${w}mm;height:${h}mm">
-    <div class="logo">STOP!</div>
-    <div class="linha">Mesa<i></i></div>
-    <div class="vencedor"><b>🏆 Vai pra final:</b><i></i></div>
-    <div class="regras">Cada um joga por si. Os números <b>1–5</b> são os temas da TV.<br><br>
-      Comparando só com a sua mesa:<br><b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia.<br><br>
-      Mesma ideia conta como repetida (dançar = dança = dançou no casamento).<br><br>
-      Quem somar mais vai pra final.</div>
-  </div>`;
-}
-document.getElementById("pages").innerHTML = [1, 1+RODADAS].map(from =>
-  `<section class="page">${SIDES.map(s => strip(s, from)).join("")}${center()}</section>`).join("");
+const frente = `<section class="page">
+  <div class="head"><div class="logo">STOP!</div><span class="campo nome">Nome<i></i></span><span class="campo mesa">Mesa<i></i></span></div>
+  <div class="regras">Cada um por si. Os temas <b>1–5</b> são os da TV. Comparando só com a sua mesa:
+    <b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia. Mesma ideia conta como repetida (dançar = dança).
+    Quem somar mais na mesa vai pra final, no verso.</div>
+  <table>${cols}${thead}${linhas(RODADAS)}</table>
+</section>`;
+const verso = `<section class="page final">
+  <div class="head"><div class="logo">FINAL</div><span class="campo nome">Nome<i></i></span><span class="campo mesa">Mesa<i></i></span></div>
+  <div class="regras">Só quem foi pra final joga deste lado. Mesmas regras, agora comparando com todos os finalistas:
+    <b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia.</div>
+  <table>${cols}${thead}${linhas(FINAL)}</table>
+</section>`;
+document.getElementById("pages").innerHTML = frente + verso;
 </script>
 </body>
 </html>
