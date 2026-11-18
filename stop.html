@@ -50,10 +50,11 @@
 .cats .row + .row { border-top: var(--bf) dashed var(--tinta); }
 .cats .row.pop { animation: pop .35s ease-out; }
 .cats .row.girando .t { color: var(--tinta); opacity: .55; }
-.cats .n { background: oklch(99% .01 95) !important; color: var(--tinta) !important; border-color: var(--tinta) !important; }
+/* número do tema = coluna da folha: selo escuro, número claro, centralizado */
 .cats .n {
-  flex: none; width: 1.9em; height: 1.9em; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  background: var(--grape); color: var(--on-grape); border: var(--bf) solid var(--ink); font-family: var(--fd); font-size: .8em;
+  flex: none; width: 1.75em; height: 1.75em; border-radius: .45em; display: flex; align-items: center; justify-content: center;
+  background: var(--tinta); color: oklch(99% .01 95); font-family: var(--fd); font-size: .82em; line-height: 1;
+  padding-top: .08em; transform: rotate(-4deg);
 }
 .cats .t { min-width: 0; overflow-wrap: break-word; }
 
