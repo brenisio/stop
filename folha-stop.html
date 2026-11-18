@@ -46,7 +46,7 @@ tr.total td.rot { font-family: var(--fd); font-size: 4.4mm; text-align: right; p
 <div class="toolbar">Imprima em A4, frente e verso, uma folha por pessoa. Frente: rodadas · verso: final. <button onclick="print()">🖨 Imprimir</button></div>
 <div id="pages"></div>
 <script>
-const TEMAS = 5, RODADAS = 7, FINAL = 3;
+const TEMAS = 5, RODADAS = 8, FINAL = 4;
 const cols = `<colgroup><col style="width:19mm"><col style="width:16mm">${"<col>".repeat(TEMAS)}<col style="width:20mm"></colgroup>`;
 const thead = `<tr><th class="peq">Rodada</th><th class="peq">Letra</th>${Array.from({length:TEMAS},(_,i)=>`<th>Tema ${i+1}</th>`).join("")}<th class="peq">Pontos</th></tr>`;
 function linhas(n){
