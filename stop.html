@@ -124,25 +124,21 @@
 
 <script>
 const DEFAULT_CATS = [
-  "Nome","CEP (cidade, estado ou país)","Animal","Fruta, verdura ou legume","Cor","Objeto","Marca",
-  "Profissão","Filme","Série ou novela","Nome de música","Cantor(a) ou banda","Artista pop",
-  "Jogador de futebol","Time de futebol","Personagem de desenho","Comida","Bebida","Parte do corpo",
-  "Minha sogra é...","Meu chefe é...","Desculpa pra chegar atrasado",
-  "Coisa que tem na geladeira","Algo que se leva pra praia","Presente ruim de aniversário",
-  "Nome de cachorro","Famoso(a) brasileiro(a)","Marca de carro","App ou site","Esporte",
-  "Instrumento musical","Lugar pra primeiro encontro","Superpoder inútil","Coisa que se faz no banho",
-  "Palavra em inglês","Super-herói ou vilão","Programa de TV","Participante de BBB",
-  "Coisa que tem na farmácia","Comida de festa infantil","Jogo (tabuleiro, videogame...)",
-  "Motivo pra terminar namoro","Coisa que mãe fala","Apelido","Adjetivo","Verbo",
-  "Coisa que dá vergonha","Personagem de filme","Lugar pra viajar",
-  "Coisa que tem na cozinha","Doce ou sobremesa","Peça de roupa","Flor ou planta","Inseto",
-  "Bicho do mar","Capital (de estado ou país)","Rua ou bairro famoso","Coisa redonda","Coisa que voa",
-  "Coisa que faz barulho","Coisa que tem no escritório","Ferramenta","Meio de transporte",
-  "Personagem de novela","Apresentador(a) de TV","Político(a)","Tipo de dança","Ritmo musical",
-  "Coisa que se compra no mercado","Algo que se perde fácil","Nome de bebê da moda","Xingamento leve",
-  "Coisa que dá medo","Mania irritante","Algo que tem no churrasco","Desculpa pra não ir à academia",
-  "Hobby","Comida que criança odeia","Algo que tem na bolsa","Marca de cerveja ou bebida","Gíria",
-  "Coisa que pai fala","Emprego dos sonhos","Lugar onde não se deve dormir"
+  "Nome","CEP (cidade, estado ou país)","Animal","Fruta, verdura ou legume","Cor","Objeto","Marca","Profissão",
+  "Filme","Série ou novela","Nome de música","Cantor(a) ou banda","Artista pop","Jogador de futebol","Time de futebol",
+  "Personagem de desenho","Comida","Bebida","Parte do corpo","Minha sogra é...","Meu chefe é...","Coisa que tem na geladeira",
+  "Presente ruim de aniversário","Nome de cachorro","Famoso(a) brasileiro(a)","Marca de carro","App ou site",
+  "Esporte","Instrumento musical","Lugar pra primeiro encontro","Coisa que se faz no banho","Palavra em inglês",
+  "Super-herói ou vilão","Programa de TV","Participante de BBB","Coisa que tem na farmácia","Comida de festa infantil",
+  "Jogo (tabuleiro, videogame...)","Apelido","Adjetivo","Verbo","Coisa que dá vergonha","Personagem de filme",
+  "Lugar pra viajar","Coisa que tem na cozinha","Doce ou sobremesa","Peça de roupa","Flor ou planta","Inseto",
+  "Bicho do mar","Capital (de estado ou país)","Rua ou bairro famoso","Coisa redonda","Coisa que voa","Coisa que faz barulho",
+  "Coisa que tem no escritório","Ferramenta","Meio de transporte","Personagem de novela","Apresentador(a) de TV",
+  "Tipo de dança","Ritmo musical","Coisa que se compra no mercado","Algo que se perde fácil","Nome de bebê da moda",
+  "Xingamento leve","Coisa que dá medo","Mania irritante","Algo que tem no churrasco","Hobby","Comida que criança odeia",
+  "Algo que tem na bolsa","Marca de cerveja ou bebida","Gíria","Lugar onde não se deve dormir","Desculpa pra faltar",
+  "Coisa que tem na praia","Coisa que tem no shopping","Coisa que tem no banheiro","Coisa que tem na escola",
+  "Coisa que tem em festa"
 ];
 const KEY = "stop-aniversario-v1";
 const $ = s => document.querySelector(s);
@@ -151,7 +147,7 @@ function defaults(){
   return {
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 5
+    round: 1, current: null, phase: "setup", v: 6
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -180,6 +176,13 @@ if(S.v < 5){ // tema removido também do estoque já salvo
   S.usedCats = S.usedCats.filter(c => c !== fora);
   if(S.current && S.current.cats.includes(fora)) S.current = null;
   S.v = 5;
+}
+if(S.v < 6){ // temas pra responder em 1–2 palavras: tira os complexos e entra o estoque novo
+  const fora = ["Político(a)","Coisa que mãe fala","Coisa que pai fala","Emprego dos sonhos","Desculpa pra não ir à academia","Desculpa pra chegar atrasado","Motivo pra terminar namoro","Superpoder inútil","Algo que se leva pra praia"];
+  S.cats = [...new Set([...S.cats.filter(c => !fora.includes(c)), ...DEFAULT_CATS])];
+  S.usedCats = S.usedCats.filter(c => !fora.includes(c));
+  if(S.current && S.current.cats.some(c => fora.includes(c))) S.current = null;
+  S.v = 6;
 }
 
 /* ---------- utils ---------- */
