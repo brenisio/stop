@@ -138,7 +138,11 @@ const DEFAULT_CATS = [
   "Xingamento leve","Coisa que dá medo","Mania irritante","Algo que tem no churrasco","Hobby","Comida que criança odeia",
   "Algo que tem na bolsa","Marca de cerveja ou bebida","Gíria","Lugar onde não se deve dormir","Desculpa pra faltar",
   "Coisa que tem na praia","Coisa que tem no shopping","Coisa que tem no banheiro","Coisa que tem na escola",
-  "Coisa que tem em festa"
+  "Coisa que tem em festa",
+  "Superpoder","Sabor de pizza","Sabor de sorvete","Comida de boteco","Brinquedo","Personagem da Disney",
+  "Doença ou dor","Coisa gelada","Coisa quente","Coisa que fede","Coisa que pica","Coisa que gruda","Coisa que tem no carro",
+  "Coisa que tem no quarto","Coisa que tem no hospital","Coisa que tem na academia","Coisa que tem no zoológico",
+  "Coisa que tem no Natal","Coisa que tem em casamento"
 ];
 const KEY = "stop-aniversario-v1";
 const $ = s => document.querySelector(s);
@@ -147,7 +151,7 @@ function defaults(){
   return {
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 6
+    round: 1, current: null, phase: "setup", v: 7
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -183,6 +187,10 @@ if(S.v < 6){ // temas pra responder em 1–2 palavras: tira os complexos e entra
   S.usedCats = S.usedCats.filter(c => !fora.includes(c));
   if(S.current && S.current.cats.some(c => fora.includes(c))) S.current = null;
   S.v = 6;
+}
+if(S.v < 7){ // estoque novo (100 temas)
+  S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
+  S.v = 7;
 }
 
 /* ---------- utils ---------- */
