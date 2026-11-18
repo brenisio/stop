@@ -124,7 +124,7 @@ const DEFAULT_CATS = [
   "Nome","CEP (cidade, estado ou país)","Animal","Fruta, verdura ou legume","Cor","Objeto","Marca",
   "Profissão","Filme","Série ou novela","Nome de música","Cantor(a) ou banda","Artista pop",
   "Jogador de futebol","Time de futebol","Personagem de desenho","Comida","Bebida","Parte do corpo",
-  "Minha sogra é...","Meu chefe é...","O aniversariante é...","Desculpa pra chegar atrasado",
+  "Minha sogra é...","Meu chefe é...","Desculpa pra chegar atrasado",
   "Coisa que tem na geladeira","Algo que se leva pra praia","Presente ruim de aniversário",
   "Nome de cachorro","Famoso(a) brasileiro(a)","Marca de carro","App ou site","Esporte",
   "Instrumento musical","Lugar pra primeiro encontro","Superpoder inútil","Coisa que se faz no banho",
@@ -148,7 +148,7 @@ function defaults(){
   return {
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 4
+    round: 1, current: null, phase: "setup", v: 5
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -170,6 +170,13 @@ if(S.v < 4){ // TV só sorteia; pontuação toda no papel
   if(S.current) delete S.current.points;
   if(S.phase === "score" || S.phase === "board") S.phase = "round";
   S.v = 4;
+}
+if(S.v < 5){ // tema removido também do estoque já salvo
+  const fora = "O aniversariante é...";
+  S.cats = S.cats.filter(c => c !== fora);
+  S.usedCats = S.usedCats.filter(c => c !== fora);
+  if(S.current && S.current.cats.includes(fora)) S.current = null;
+  S.v = 5;
 }
 
 /* ---------- utils ---------- */
