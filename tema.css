@@ -53,11 +53,12 @@ body::after { width: 10vh; height: 10vh; left: 24%; bottom: -5vh; background: va
 
 .screen { display: none; height: 100vh; padding: 3vh 4vw; flex-direction: column; gap: 2.4vh; }
 .screen.active { display: flex; }
-h1 { font-family: var(--fd); font-weight: 400; font-size: clamp(22px, 4.6vh, 60px); margin: 0; line-height: 1.15; }
+h1 { font-family: var(--fd); font-weight: 400; font-size: clamp(22px, 4.6vh, 60px); margin: 0; line-height: 1.6; }
+h1 .tag { line-height: 1.15; }
 .muted { color: var(--muted); }
 .hint { font-size: clamp(12px, 1.8vh, 20px); color: var(--muted); text-align: center; }
 kbd { font-family: var(--ft); font-weight: 900; border: var(--bf) solid var(--ink); border-radius: 8px; padding: 0 .4em; background: var(--surface); }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 2vw; flex-wrap: wrap; }
 .btns { display: flex; gap: 1.6vw; justify-content: center; flex-wrap: wrap; align-items: center; }
 
 /* etiqueta amarela torta (título, rodada) */
