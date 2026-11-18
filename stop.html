@@ -32,7 +32,10 @@
 .round-main { gap: 3vw; }
 .letter-box.pop { animation: pop .4s ease-out; }
 @keyframes balanca { 50% { transform: rotate(3deg) scale(1.03); } }
-.cats { list-style: none; margin: 0; padding: 0 var(--o) var(--o) 0; display: grid; gap: 1.8vh 1.6vw; flex: 1; max-width: none; align-self: stretch; overflow: hidden; grid-auto-rows: minmax(0, 1fr); align-content: center; max-height: 100%; }
+/* até 6 temas: uma coluna; cada cartão tem a altura do texto + uma parte igual da sobra (tema longo = caixa maior) */
+.cats { list-style: none; margin: 0; padding: 0 var(--o) var(--o) 0; display: flex; flex-direction: column; gap: 1.8vh 1.6vw; flex: 1; max-width: none; align-self: stretch; overflow: hidden; max-height: 100%; }
+.cats > li { flex: 1 0 auto; }
+.cats.duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); align-content: center; }
 .cats li {
   display: flex; flex-direction: column; justify-content: space-evenly; padding: .15em .6em; min-height: 0; min-width: 0;
   background: var(--surface); border: var(--b) solid var(--ink); border-radius: var(--rb); box-shadow: var(--pop);
@@ -270,7 +273,7 @@ function setLetter(l){
 function drawCatList(cats){
   // um cartão por tema; o número é a linha na folha
   const ul = $("#rCats");
-  ul.style.gridTemplateColumns = `repeat(${cats.length > 6 ? 2 : 1},minmax(0,1fr))`;
+  ul.classList.toggle("duas", cats.length > 6);
   ul.innerHTML = cats.map((c,i)=>
     `<li><div class="row"><span class="n">${i+1}</span><span class="t">${esc(c)}</span></div></li>`).join("");
   fitCats();
@@ -280,11 +283,16 @@ function fitCats(){
   const ul = $("#rCats"); if(!$("#round").classList.contains("active")) return;
   const items = [...ul.children];
   // mede pelo layout (offset/scroll das linhas), que ignora o "pulo" da animação e o que vaza pra cima
-  const fits = () => items.every(li => {
+  const largura = () => items.every(li => [...li.children].every(r => r.scrollWidth <= r.clientWidth + 1));
+  // uma coluna: o último cartão (na altura natural) precisa caber na lista
+  const coluna = () => { const u = items[items.length-1], cs = getComputedStyle(ul);
+    return u.offsetTop - ul.offsetTop + u.offsetHeight <= ul.clientHeight - parseFloat(cs.paddingBottom) + 1 && largura(); };
+  const grade = () => items.every(li => {
     const cs = getComputedStyle(li), rows = [...li.children];
     const livre = li.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
     return rows.reduce((a, r) => a + r.offsetHeight, 0) <= livre + 1 && rows.every(r => r.scrollWidth <= r.clientWidth + 1);
   });
+  const fits = ul.classList.contains("duas") ? grade : coluna;
   let lo = 2, hi = 10;
   for(let k = 0; k < 14; k++){ const mid = (lo+hi)/2; ul.style.fontSize = mid + "vh"; if(fits()) lo = mid; else hi = mid; }
   ul.style.fontSize = lo + "vh";
