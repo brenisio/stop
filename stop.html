@@ -140,7 +140,7 @@ const DEFAULT_CATS = [
   "Coisa que tem na praia","Coisa que tem no shopping","Coisa que tem no banheiro","Coisa que tem na escola",
   "Coisa que tem em festa",
   "Superpoder","Sabor de pizza","Sabor de sorvete","Comida de bar","Brinquedo","Personagem da Disney",
-  "Doença ou dor","Coisa gelada","Coisa quente","Coisa que fede","Coisa macia","Coisa que gruda","Coisa que tem no carro",
+  "Doença ou dor","Coisa gelada","Coisa quente","Coisa que fede","Coisa macia","Nome de remédio","Coisa que tem no carro",
   "Coisa que tem no quarto","Coisa que tem no hospital","Coisa que tem na academia","Coisa que tem no zoológico",
   "Coisa que tem no Natal","Coisa que tem em casamento"
 ];
@@ -151,7 +151,7 @@ function defaults(){
   return {
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 8
+    round: 1, current: null, phase: "setup", v: 9
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -199,6 +199,13 @@ if(S.v < 8){ // Comida de boteco → Comida de bar; sai Coisa que pica, entra Co
   S.usedCats = S.usedCats.map(t);
   if(S.current) S.current.cats = S.current.cats.map(t);
   S.v = 8;
+}
+if(S.v < 9){ // Coisa que gruda → Nome de remédio
+  const t = c => c === "Coisa que gruda" ? "Nome de remédio" : c;
+  S.cats = [...new Set(S.cats.map(t))];
+  S.usedCats = S.usedCats.map(t);
+  if(S.current) S.current.cats = S.current.cats.map(t);
+  S.v = 9;
 }
 
 /* ---------- utils ---------- */
