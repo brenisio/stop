@@ -142,7 +142,7 @@ const DEFAULT_CATS = [
   "Superpoder","Sabor de pizza","Sabor de sorvete","Comida de bar","Brinquedo","Personagem da Disney",
   "Doença ou dor","Coisa gelada","Coisa quente","Coisa que fede","Coisa macia","Nome de remédio","Coisa que tem no carro",
   "Coisa que tem no quarto","Coisa que tem no hospital","Coisa que tem na academia","Coisa que tem no zoológico",
-  "Coisa que tem no Natal","Coisa que tem em casamento"
+  "Coisa que tem no Natal","Coisa que tem em casamento","Coisa que tem em Floripa"
 ];
 const KEY = "stop-aniversario-v1";
 const $ = s => document.querySelector(s);
@@ -151,7 +151,7 @@ function defaults(){
   return {
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 9
+    round: 1, current: null, phase: "setup", v: 10
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -206,6 +206,10 @@ if(S.v < 9){ // Coisa que gruda → Nome de remédio
   S.usedCats = S.usedCats.map(t);
   if(S.current) S.current.cats = S.current.cats.map(t);
   S.v = 9;
+}
+if(S.v < 10){ // + Coisa que tem em Floripa
+  S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
+  S.v = 10;
 }
 
 /* ---------- utils ---------- */
