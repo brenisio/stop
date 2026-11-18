@@ -3,12 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Jogos do Aniversário</title>
+<title>Stop</title>
+<meta name="description" content="Stop que só precisa de papel e caneta: sorteia os temas e a letra com cronômetro. Abre no celular, no PC ou na TV.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Stop">
+<meta property="og:title" content="STOP! Só precisa de papel e caneta">
+<meta property="og:description" content="Sorteia os temas e a letra com cronômetro. Abre no celular, no PC ou na TV e cada um joga no papel.">
+<meta property="og:url" content="https://brenisio.github.io/stop/">
+<meta property="og:image" content="https://brenisio.github.io/stop/og-stop.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="icone-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="theme-color" content="#17142a">
 <script>
   (function(){
     var sis = matchMedia('(prefers-color-scheme: dark)');
-    var e = null; try { e = localStorage.getItem('aniversario:tema'); } catch(x){}
-    document.documentElement.dataset.theme = (e ? e === 'escuro' : sis.matches) ? 'dark' : 'light';
+    function aplicar(){
+      var e = null; try { e = localStorage.getItem('aniversario:tema'); } catch(x){}
+      document.documentElement.dataset.theme = (e ? e === 'escuro' : sis.matches) ? 'dark' : 'light';
+    }
+    window.aplicarTema = aplicar; aplicar(); sis.addEventListener('change', aplicar);
   })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,27 +34,471 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@600;700;800;900&display=swap">
 <link rel="stylesheet" href="tema.css">
 <style>
-body { overflow: auto; }
-main { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4vh; padding: 6vh 16px; }
-h1 { font-size: clamp(28px, 6vh, 72px); text-align: center; }
-.jogos { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; width: min(1000px, 100%); }
-a.card { display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: var(--tinta); padding: 24px; transition: transform .12s, box-shadow .12s; }
-a.card:active { box-shadow: none; transform: translate(var(--o), var(--o)); }
-a.card b { font-family: var(--fd); font-weight: 400; font-size: 26px; }
-a.card span { font-size: 16px; }
-.c1 { background: var(--turq); } .c2 { background: var(--coral); } .c3 { background: oklch(80% .11 292); }
+/* rodada */
+.round-main { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; gap: 4vw; }
+.letter-box {
+  --s: min(24vw, 42vh); --rot: 0deg;
+  width: var(--s); height: var(--s); flex: none; display: flex; align-items: center; justify-content: center;
+  background: var(--canary); color: var(--tinta); font-family: var(--fd); font-size: calc(var(--s) * .62); line-height: 1;
+  border: calc(var(--b) * 1.8) solid var(--ink); border-radius: 4vh; box-shadow: 1.3vh 1.3vh 0 0 var(--ink);
+  transform: rotate(var(--rot));
+}
+.letter-box.espera { background: var(--surface2); color: var(--muted); animation: balanca 1.6s ease-in-out infinite; }
+.round-main { gap: 3vw; }
+.letter-box.pop { animation: pop .4s ease-out; }
+@keyframes balanca { 50% { transform: rotate(3deg) scale(1.03); } }
+/* até 6 temas: uma coluna; cada cartão tem a altura do texto + uma parte igual da sobra (tema longo = caixa maior) */
+.cats { list-style: none; margin: 0; padding: 0 var(--o) var(--o) 0; display: flex; flex-direction: column; gap: 1.8vh 1.6vw; flex: 1; max-width: none; align-self: stretch; overflow: hidden; max-height: 100%; }
+.cats > li { flex: 1 0 auto; }
+.cats.duas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); align-content: center; }
+.cats li {
+  display: flex; flex-direction: column; justify-content: space-evenly; padding: .15em .6em; min-height: 0; min-width: 0;
+  background: var(--surface); border: var(--b) solid var(--ink); border-radius: var(--rb); box-shadow: var(--pop);
+  font-weight: 900; line-height: 1.08; overflow: hidden; -webkit-font-smoothing: antialiased;
+}
+.cats li.pop { animation: pop .35s ease-out; }
+/* cada tema num cartão colorido (texto sempre na tinta escura, nítido nos dois temas) */
+.cats li { --c: var(--turq); background: var(--c); color: var(--tinta); }
+.cats li:nth-child(5n+2) { --c: var(--coral); }
+.cats li:nth-child(5n+3) { --c: oklch(80% .11 292); }
+.cats li:nth-child(5n+4) { --c: oklch(86% .14 155); }
+.cats li:nth-child(5n+5) { --c: oklch(80% .14 60); } /* laranja: amarelo é só da letra */
+.cats li .t { color: var(--tinta); }
+.cats .row { display: flex; align-items: center; gap: .5em; padding: .2em 0; min-width: 0; }
+.cats .row + .row { border-top: var(--bf) dashed var(--tinta); }
+.cats .row.pop { animation: pop .35s ease-out; }
+.cats .row.girando .t { color: var(--tinta); opacity: .55; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* girando não quebra linha */
+/* número do tema = coluna da folha: selo escuro, número claro, centralizado */
+.cats .n {
+  flex: none; width: 1.75em; height: 1.75em; border-radius: .45em; display: flex; align-items: center; justify-content: center;
+  background: var(--tinta); color: oklch(99% .01 95); font-family: var(--fd); font-size: .82em; line-height: 1;
+  padding-top: .08em; transform: rotate(-4deg);
+}
+.cats .t { min-width: 0; overflow-wrap: break-word; }
+
 </style>
 </head>
 <body>
-<main>
-  <h1><span class="tag">🎉 Jogos</span> do Aniversário</h1>
-  <div class="jogos">
-    <a class="card c1" href="stop.html"><b>🛑 Stop</b><span>Sorteia 5 temas e a letra, com cronômetro. Só precisa de papel e caneta.</span></a>
-    <a class="card c2" href="mentira.html"><b>🤥 Mentira Convincente</b><span>Cada mesa inventa uma resposta; todo mundo vota em qual é a verdadeira.</span></a>
-    <a class="card c3" href="folha-stop.html"><b>🖨 Folha do Stop</b><span>Uma por pessoa, A4 preto e branco: 8 rodadas na frente e a final no verso.</span></a>
+
+<!-- CONFIG -->
+<section class="screen setup" id="setup">
+  <div class="bar">
+    <h1><span class="tag">✋ STOP!</span></h1>
+    <div class="btns">
+      <a class="btn small" href="folha-stop.html" target="_blank">🖨 Folha</a>
+      <button class="btn small" id="btnShare">📲 Compartilhar</button>
+      <button class="btn small" id="btnTheme">🌓 Tema</button>
+      <button class="btn small" id="btnNew">Recomeçar do zero</button>
+      <button class="btn primary" id="btnStart" data-primary>Começar ▶</button>
+    </div>
   </div>
-  <a class="btn small" href="folha-stop.pdf" download>⬇ Baixar folha em PDF</a>
-  <p class="hint">Abra no computador ligado à TV · <kbd>F</kbd> tela cheia · <kbd>espaço</kbd> avança</p>
-</main>
+  <div class="cfg">
+    <div class="card">
+      <div class="cols">
+        <label>Tempo (s)<input id="cfgTime" type="number" min="0" step="10"></label>
+        <label>Temas<input id="cfgNum" type="number" min="1" max="12"></label>
+        <label>Rodada<input id="cfgRound" type="number" min="1"></label>
+      </div>
+      <label>Letras que podem sair
+        <input id="cfgLetters">
+      </label>
+      <p class="nota" style="margin:0">
+        <b>Como funciona:</b> sorteia os temas, depois a letra. Cada um joga por si e preenche o seu lado da folha
+        até o tempo acabar (ou alguém gritar STOP). A pontuação é toda no papel: cada mesa compara só entre si,
+        <b>10</b> resposta só sua, <b>5</b> repetida, <b>0</b> vazia ou inválida.<br>
+        Tempo 0 = sem cronômetro. Letras e temas não se repetem até acabar o estoque.<br>
+        Atalhos: <kbd>espaço</kbd> ação principal · <kbd>F</kbd> tela cheia.
+      </p>
+    </div>
+    <div class="card">
+      <label style="flex:1">Temas possíveis (um por linha) — <span class="muted" id="catCount"></span>
+        <textarea id="cfgCats" style="flex:1;min-height:240px"></textarea>
+      </label>
+      <div><button class="btn small" id="btnResetCats">Restaurar temas padrão</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- RODADA -->
+<section class="screen" id="round">
+  <div class="bar">
+    <div style="font-size:clamp(18px,4vh,52px)"><span class="tag">Rodada <span id="rNum">1</span></span></div>
+    <div class="btns" style="flex-wrap:nowrap">
+      <button class="btn small" id="btnMenu">☰ Menu</button>
+      <div class="relogio" id="rTimer"></div>
+    </div>
+  </div>
+  <div class="barra" id="rProg"><div></div></div>
+  <div class="round-main">
+    <div class="letter-box espera" id="rLetter">?</div>
+    <ol class="cats" id="rCats"></ol>
+  </div>
+  <div class="btns" id="rBtns"></div>
+  <div class="hint"><kbd>espaço</kbd> ação principal · <kbd>F</kbd> tela cheia</div>
+</section>
+
+<div class="flash" id="stopOverlay"><span>STOP!</span></div>
+
+<script>
+const DEFAULT_CATS = [
+  "Nome","CEP (cidade, estado ou país)","Animal","Fruta, verdura ou legume","Cor","Objeto","Marca","Profissão",
+  "Filme","Série ou novela","Nome de música","Cantor(a) ou banda","Artista pop","Jogador de futebol","Time de futebol",
+  "Personagem de desenho","Comida","Bebida","Parte do corpo","Minha sogra é...","Meu chefe é...","Coisa que tem na geladeira",
+  "Presente ruim de aniversário","Nome de cachorro","Famoso(a) brasileiro(a)","Marca de carro","App ou site",
+  "Esporte","Instrumento musical","Lugar pra primeiro encontro","Coisa que se faz no banho","Palavra em inglês",
+  "Super-herói ou vilão","Programa de TV","Participante de BBB","Coisa que tem na farmácia","Comida de festa infantil",
+  "Jogo (tabuleiro, videogame...)","Apelido","Adjetivo","Verbo","Coisa que dá vergonha","Personagem de filme",
+  "Lugar pra viajar","Coisa que tem na cozinha","Doce ou sobremesa","Peça de roupa","Flor ou planta","Inseto",
+  "Bicho do mar","Rua ou bairro famoso","Coisa redonda","Coisa que voa","Coisa que faz barulho",
+  "Coisa que tem no escritório","Ferramenta","Meio de transporte","Personagem de novela","Apresentador(a) de TV",
+  "Tipo de dança","Ritmo musical","Coisa que se compra no mercado","Algo que se perde fácil","Nome de bebê da moda",
+  "Xingamento leve","Coisa que dá medo","Mania irritante","Algo que tem no churrasco","Hobby","Comida que criança odeia",
+  "Algo que tem na bolsa","Marca de cerveja ou bebida","Gíria","Lugar onde não se deve dormir","Desculpa pra faltar",
+  "Coisa que tem na praia","Coisa que tem no shopping","Coisa que tem no banheiro","Coisa que tem na escola",
+  "Coisa que tem em festa",
+  "Superpoder","Sabor de pizza","Sabor de sorvete","Comida de bar","Brinquedo","Personagem da Disney",
+  "Doença ou dor","Coisa gelada","Coisa quente","Coisa que fede","Coisa macia","Nome de remédio","Coisa que tem no carro",
+  "Coisa que tem no quarto","Coisa que tem no hospital","Coisa que tem na academia","Coisa que tem no zoológico",
+  "Coisa que tem no Natal","Coisa que tem em casamento","Coisa que tem em Floripa"
+];
+const KEY = "stop-aniversario-v1";
+const $ = s => document.querySelector(s);
+
+function defaults(){
+  return {
+    time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
+    cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
+    round: 1, current: null, phase: "setup", v: 11
+  };
+}
+function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+let S = load() || defaults();
+if(!S.v){ // migração da 1ª versão: mais temas por rodada e estoque novo
+  S.numCats = Math.max(S.numCats, 8);
+  S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
+  if(S.current && !S.current.ended) S.current = null;
+  S.v = 2;
+}
+if(S.v < 3){ // cada um por si: 5 temas por rodada, placar da TV só pra final
+  S.numCats = 5;
+  if(S.current && !S.current.ended) S.current = null;
+  S.v = 3;
+}
+if(S.v < 4){ // TV só sorteia; pontuação toda no papel
+  delete S.teams;
+  if(S.current) delete S.current.points;
+  if(S.phase === "score" || S.phase === "board") S.phase = "round";
+  S.v = 4;
+}
+if(S.v < 5){ // tema removido também do estoque já salvo
+  const fora = "O aniversariante é...";
+  S.cats = S.cats.filter(c => c !== fora);
+  S.usedCats = S.usedCats.filter(c => c !== fora);
+  if(S.current && S.current.cats.includes(fora)) S.current = null;
+  S.v = 5;
+}
+if(S.v < 6){ // temas pra responder em 1–2 palavras: tira os complexos e entra o estoque novo
+  const fora = ["Político(a)","Coisa que mãe fala","Coisa que pai fala","Emprego dos sonhos","Desculpa pra não ir à academia","Desculpa pra chegar atrasado","Motivo pra terminar namoro","Superpoder inútil","Algo que se leva pra praia"];
+  S.cats = [...new Set([...S.cats.filter(c => !fora.includes(c)), ...DEFAULT_CATS])];
+  S.usedCats = S.usedCats.filter(c => !fora.includes(c));
+  if(S.current && S.current.cats.some(c => fora.includes(c))) S.current = null;
+  S.v = 6;
+}
+if(S.v < 7){ // estoque novo (100 temas)
+  S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
+  S.v = 7;
+}
+if(S.v < 8){ // Comida de boteco → Comida de bar; sai Coisa que pica, entra Coisa macia
+  const troca = {"Comida de boteco": "Comida de bar", "Coisa que pica": "Coisa macia"};
+  const t = c => troca[c] || c;
+  S.cats = [...new Set(S.cats.map(t))];
+  S.usedCats = S.usedCats.map(t);
+  if(S.current) S.current.cats = S.current.cats.map(t);
+  S.v = 8;
+}
+if(S.v < 9){ // Coisa que gruda → Nome de remédio
+  const t = c => c === "Coisa que gruda" ? "Nome de remédio" : c;
+  S.cats = [...new Set(S.cats.map(t))];
+  S.usedCats = S.usedCats.map(t);
+  if(S.current) S.current.cats = S.current.cats.map(t);
+  S.v = 9;
+}
+if(S.v < 10){ // + Coisa que tem em Floripa
+  S.cats = [...new Set([...S.cats, ...DEFAULT_CATS])];
+  S.v = 10;
+}
+if(S.v < 11){ // sai Capital (difícil demais)
+  const fora = "Capital (de estado ou país)";
+  S.cats = S.cats.filter(c => c !== fora);
+  S.usedCats = S.usedCats.filter(c => c !== fora);
+  if(S.current && S.current.cats.includes(fora)) S.current = null;
+  S.v = 11;
+}
+
+/* ---------- utils ---------- */
+const pick = a => a[Math.floor(Math.random()*a.length)];
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function fmt(ms){ const s=Math.ceil(ms/1000); return Math.floor(s/60)+":"+String(s%60).padStart(2,"0"); }
+function letterPool(){ return [...new Set(S.letters.toUpperCase().replace(/[^A-Z]/g,"").split(""))]; }
+function popAnim(el){ el.classList.remove("pop"); void el.offsetWidth; el.classList.add("pop"); }
+
+let AC;
+function tone(f, d, type="sine", vol=.2, when=0){
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    const t = AC.currentTime + when, o = AC.createOscillator(), g = AC.createGain();
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t+d);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+d);
+  }catch(e){}
+}
+function alarm(){ for(let i=0;i<4;i++){ tone(990,.18,"square",.25,i*.22); tone(660,.18,"square",.2,i*.22+.11); } }
+function fanfare(){ [523,659,784,1047].forEach((f,i)=>tone(f,.25,"triangle",.25,i*.12)); }
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id===id));
+  S.phase = id; save();
+}
+// compartilhar: menu nativo (celular) ou WhatsApp Web; o preview vem das tags og: acima
+$("#btnShare").onclick = async () => {
+  const url = "https://brenisio.github.io/stop/", text = "Bora jogar Stop? Só precisa de papel e caneta:";
+  if(navigator.share){ try { await navigator.share({title: "Stop", text, url}); return; } catch(e){ if(e.name === "AbortError") return; } }
+  open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
+};
+$("#btnTheme").onclick = () => {
+  const dark = document.documentElement.dataset.theme === "dark";
+  try { localStorage.setItem("aniversario:tema", dark ? "claro" : "escuro"); } catch(e){}
+  window.aplicarTema();
+};
+
+/* ---------- setup ---------- */
+function renderSetup(){
+  $("#cfgTime").value = S.time;
+  $("#cfgNum").value = S.numCats;
+  $("#cfgRound").value = S.round;
+  $("#cfgLetters").value = S.letters;
+  $("#cfgCats").value = S.cats.join("\n");
+  updateCatCount();
+  $("#btnStart").textContent = (S.round>1 || S.current) ? "Continuar ▶" : "Começar ▶";
+  show("setup");
+}
+function updateCatCount(){ $("#catCount").textContent = $("#cfgCats").value.split("\n").filter(l=>l.trim()).length + " temas"; }
+function applySetup(){
+  S.time = Math.max(0, parseInt($("#cfgTime").value)||0);
+  const num = Math.min(12, Math.max(1, parseInt($("#cfgNum").value)||5));
+  if(num !== S.numCats) S.current = null;
+  S.numCats = num;
+  S.round = Math.max(1, parseInt($("#cfgRound").value)||1);
+  S.letters = $("#cfgLetters").value;
+  if(!letterPool().length){ alert("Coloque pelo menos uma letra."); return false; }
+  const cats = [...new Set($("#cfgCats").value.split("\n").map(s=>s.trim()).filter(Boolean))];
+  if(cats.length < S.numCats){ alert("Precisa de pelo menos "+S.numCats+" temas."); return false; }
+  S.cats = cats;
+  S.usedCats = S.usedCats.filter(c => cats.includes(c));
+  save(); return true;
+}
+$("#cfgCats").addEventListener("input", updateCatCount);
+$("#btnResetCats").onclick = () => { $("#cfgCats").value = DEFAULT_CATS.join("\n"); updateCatCount(); };
+$("#btnStart").onclick = () => { if(applySetup()) enterRound(); };
+$("#btnNew").onclick = () => {
+  if(!confirm("Voltar pra rodada 1 e liberar todos os temas e letras?")) return;
+  if(!applySetup()) return;
+  S.round = 1; S.current = null; S.usedCats = []; S.usedLetters = [];
+  save(); enterRound();
+};
+
+/* ---------- rodada ---------- */
+// empty → (temas) → cats → (letra) → ready → running/paused → ended
+let rstate = "empty";
+const timer = {end:0, remaining:0, iv:null, lastSec:null};
+
+function enterRound(){
+  const c = S.current;
+  rstate = !c ? "empty" : c.ended ? "ended" : c.letter ? "ready" : "cats";
+  timer.remaining = S.time*1000;
+  show("round");
+  $("#rNum").textContent = S.round;
+  setLetter(c && c.letter);
+  drawCatList(c ? c.cats : Array(S.numCats).fill("?"));
+  showTime(rstate==="ended" ? 0 : timer.remaining);
+  renderRoundBtns();
+}
+function setLetter(l){
+  const el = $("#rLetter");
+  el.textContent = l || "?";
+  el.classList.toggle("espera", !l);
+}
+function drawCatList(cats){
+  // um cartão por tema; o número é a linha na folha
+  const ul = $("#rCats");
+  ul.classList.toggle("duas", cats.length > 6);
+  ul.innerHTML = cats.map((c,i)=>
+    `<li><div class="row"><span class="n">${i+1}</span><span class="t">${esc(c)}</span></div></li>`).join("");
+  fitCats();
+}
+// maior fonte em que todos os temas cabem (usa o tema mais longo do estoque durante o sorteio)
+function fitCats(){
+  const ul = $("#rCats"); if(!$("#round").classList.contains("active")) return;
+  const items = [...ul.children];
+  // mede pelo layout (offset/scroll das linhas), que ignora o "pulo" da animação e o que vaza pra cima
+  const largura = () => items.every(li => [...li.children].every(r => r.scrollWidth <= r.clientWidth + 1));
+  // uma coluna: o último cartão (na altura natural) precisa caber na lista
+  const coluna = () => { const u = items[items.length-1], cs = getComputedStyle(ul);
+    return u.offsetTop - ul.offsetTop + u.offsetHeight <= ul.clientHeight - parseFloat(cs.paddingBottom) + 1 && largura(); };
+  const grade = () => items.every(li => {
+    const cs = getComputedStyle(li), rows = [...li.children];
+    const livre = li.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    return rows.reduce((a, r) => a + r.offsetHeight, 0) <= livre + 1 && rows.every(r => r.scrollWidth <= r.clientWidth + 1);
+  });
+  const fits = ul.classList.contains("duas") ? grade : coluna;
+  let lo = 2, hi = 10;
+  for(let k = 0; k < 14; k++){ const mid = (lo+hi)/2; ul.style.fontSize = mid + "vh"; if(fits()) lo = mid; else hi = mid; }
+  ul.style.fontSize = lo + "vh";
+}
+addEventListener("resize", fitCats);
+// reajusta quando a fonte do site termina de carregar ou a área dos temas muda de tamanho
+document.fonts && document.fonts.ready.then(fitCats);
+document.fonts && document.fonts.addEventListener("loadingdone", fitCats);
+if(window.ResizeObserver){ let w = 0, h = 0; new ResizeObserver(([e]) => {
+  const r = e.contentRect; if(Math.abs(r.width-w) > 1 || Math.abs(r.height-h) > 1){ w = r.width; h = r.height; fitCats(); }
+}).observe($("#rCats")); }
+function showTime(ms){
+  const el = $("#rTimer"), pr = $("#rProg");
+  if(!S.time){ el.textContent = ""; pr.style.visibility = "hidden"; return; }
+  pr.style.visibility = "visible";
+  el.textContent = fmt(ms);
+  const urg = ms <= 10000 && (rstate === "running" || rstate === "paused" || rstate === "ended");
+  el.classList.toggle("urgente", urg && ms > 0);
+  pr.classList.toggle("urgente", urg);
+  pr.firstElementChild.style.transform = `scaleX(${1 - ms/(S.time*1000)})`;
+}
+function renderRoundBtns(){
+  $("#rBtns").innerHTML = {
+    empty:   `<button class="btn primary" data-primary data-a="cats">🎲 Sortear temas</button>`,
+    spin:    `<button class="btn" disabled>Sorteando…</button>`,
+    cats:    `<button class="btn" data-a="cats">🔀 Outros temas</button>
+              <button class="btn primary" data-primary data-a="letter">🔤 Sortear letra</button>`,
+    ready:   `<button class="btn" data-a="letter">🔤 Outra letra</button>
+              <button class="btn primary" data-primary data-a="start">▶ Valendo!</button>`,
+    running: `${S.time?`<button class="btn" data-a="pause">⏸ Pausar</button>`:""}
+              <button class="btn coral" data-primary data-a="stop">✋ STOP!</button>`,
+    paused:  `<button class="btn" data-a="stop">✋ Encerrar</button>
+              <button class="btn primary" data-primary data-a="resume">▶ Continuar</button>`,
+    ended:   `<button class="btn" data-a="settings">⚙ Config</button>
+              <button class="btn primary" data-primary data-a="next">▶ Próxima rodada</button>`
+  }[rstate];
+}
+$("#rBtns").addEventListener("click", e => {
+  const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
+  ({cats:drawCats, letter:drawLetter, start:startTimer, pause:pauseTimer, resume:resumeTimer,
+    stop:endRound, next:nextRound, settings:renderSetup})[a]();
+});
+
+function spin(el, pool, final, total, onTick, done){
+  const t0 = performance.now();
+  (function step(){
+    const t = (performance.now()-t0)/total;
+    if(t >= 1){ el.textContent = final; done && done(); return; }
+    el.textContent = pick(pool); onTick && onTick();
+    setTimeout(step, 45 + 300*t*t);
+  })();
+}
+function drawCats(){
+  if(rstate === "spin") return;
+  if(S.current){ // re-sorteio: devolve temas e letra ao estoque
+    S.usedCats = S.usedCats.filter(c => !S.current.cats.includes(c));
+    S.usedLetters = S.usedLetters.filter(l => l !== S.current.letter);
+  }
+  let ca = S.cats.filter(c => !S.usedCats.includes(c));
+  if(ca.length < S.numCats){ S.usedCats = []; ca = S.cats.slice(); }
+  const cats = shuffle(ca).slice(0, S.numCats);
+  S.usedCats.push(...cats);
+  S.current = {cats, letter:null, ended:false};
+  save();
+
+  rstate = "spin"; renderRoundBtns(); setLetter(null);
+  drawCatList(cats);
+  const items = [...document.querySelectorAll("#rCats .row")];
+  let pending = items.length;
+  items.forEach((li,i) => {
+    li.classList.add("girando");
+    spin(li.querySelector(".t"), S.cats, cats[i], 700 + i*280, null, () => {
+      li.classList.remove("girando"); popAnim(li); tone(480+i*45,.12,"triangle",.2);
+      if(--pending === 0){ rstate = "cats"; renderRoundBtns(); fitCats(); }
+    });
+  });
+}
+function drawLetter(){
+  if(rstate === "spin" || !S.current) return;
+  if(S.current.letter) S.usedLetters = S.usedLetters.filter(l => l !== S.current.letter);
+  const letters = letterPool();
+  let la = letters.filter(l => !S.usedLetters.includes(l));
+  if(!la.length){ S.usedLetters = []; la = letters; }
+  const letter = pick(la);
+  S.usedLetters.push(letter); S.current.letter = letter; save();
+
+  rstate = "spin"; renderRoundBtns();
+  const el = $("#rLetter"); el.classList.remove("espera");
+  spin(el, letters, letter, 2600, () => tone(1200,.03,"square",.05), () => {
+    popAnim(el); fanfare(); startTimer(); // letra na tela = valendo
+  });
+}
+function startTimer(){
+  timer.remaining = S.time*1000; timer.lastSec = null;
+  tone(880,.15,"triangle",.3); resumeTimer();
+}
+function resumeTimer(){
+  rstate = "running"; renderRoundBtns();
+  if(!S.time) return;
+  timer.end = performance.now() + timer.remaining;
+  clearInterval(timer.iv); timer.iv = setInterval(tickTimer, 100);
+}
+function pauseTimer(){
+  timer.remaining = Math.max(0, timer.end - performance.now());
+  clearInterval(timer.iv); rstate = "paused"; renderRoundBtns(); showTime(timer.remaining);
+}
+function tickTimer(){
+  const ms = Math.max(0, timer.end - performance.now());
+  showTime(ms);
+  const sec = Math.ceil(ms/1000);
+  if(sec !== timer.lastSec){ timer.lastSec = sec; if(sec<=10 && sec>0) tone(sec<=3?1320:880,.08,"square",.15); }
+  if(ms <= 0) endRound();
+}
+function endRound(){
+  clearInterval(timer.iv);
+  rstate = "ended"; S.current.ended = true; save();
+  showTime(0); renderRoundBtns(); alarm();
+  const ov = $("#stopOverlay"); ov.classList.add("show");
+  setTimeout(() => ov.classList.remove("show"), 1800);
+}
+$("#stopOverlay").onclick = () => $("#stopOverlay").classList.remove("show");
+
+// pontuação feita no papel, em cada mesa
+function nextRound(){ S.current = null; S.round++; save(); enterRound(); }
+
+$("#btnMenu").onclick = () => {
+  if((rstate === "running" || rstate === "paused") && !confirm("A rodada está valendo. Sair pro menu mesmo assim?")) return;
+  if(rstate === "running") pauseTimer();
+  clearInterval(timer.iv); renderSetup();
+};
+
+/* ---------- atalhos ---------- */
+document.addEventListener("keydown", e => {
+  if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  if(e.code === "Space"){
+    e.preventDefault();
+    if($("#stopOverlay").classList.contains("show")){ $("#stopOverlay").classList.remove("show"); return; }
+    document.querySelector(".screen.active [data-primary]")?.click();
+  } else if(e.key.toLowerCase() === "f"){
+    if(document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.().catch(()=>{});
+  }
+});
+
+/* ---------- start ---------- */
+({setup:renderSetup, round:enterRound}[S.phase] || renderSetup)();
+</script>
 </body>
 </html>

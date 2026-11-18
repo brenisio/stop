@@ -151,3 +151,4 @@ label { font-weight: 800; font-size: 15px; display: flex; flex-direction: column
   border: var(--bf) solid var(--ink); background: var(--surface); color: var(--text); box-shadow: var(--pop-f);
 }
 .adj button:active { box-shadow: none; transform: translate(var(--of), var(--of)); }
+a.btn { text-decoration: none; display: inline-block; }
