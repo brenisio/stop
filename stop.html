@@ -57,22 +57,6 @@
 }
 .cats .t { min-width: 0; overflow-wrap: break-word; }
 
-/* pontuação */
-.score-wrap { flex: 1; min-height: 0; overflow: auto; padding: 1vh 1vw; }
-table { width: 100%; border-collapse: separate; border-spacing: .5vw .9vh; font-size: clamp(13px, 2.3vh, 28px); }
-th { font-family: var(--fd); font-weight: 400; font-size: .7em; padding: .3em; vertical-align: bottom; line-height: 1.2; }
-th.team, td.team { text-align: left; font-weight: 900; white-space: nowrap; }
-td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: var(--destaque); }
-.pt {
-  font-family: var(--fd); font-size: 1em; width: 100%; padding: .45em 0; cursor: pointer;
-  border: var(--bf) solid var(--ink); border-radius: 1.4vh; background: var(--surface2); color: var(--muted);
-  box-shadow: var(--pop-f); transition: transform .1s, box-shadow .1s;
-}
-.pt:active { box-shadow: none; transform: translate(var(--of), var(--of)); }
-.pt[data-v="10"] { background: var(--turq); color: var(--tinta); }
-.pt[data-v="5"] { background: var(--canary); color: var(--tinta); }
-.legend { display: flex; gap: 2vw; justify-content: center; align-items: center; flex-wrap: wrap; font-size: clamp(13px, 2vh, 22px); }
-.legend b { font-family: var(--fd); font-weight: 400; padding: .1em .6em; border: var(--bf) solid var(--ink); border-radius: 10px; color: var(--tinta); }
 </style>
 </head>
 <body>
@@ -83,15 +67,12 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
     <h1><span class="tag">🎉 STOP</span> &nbsp;do Aniversário</h1>
     <div class="btns">
       <button class="btn small" id="btnTheme">🌓 Tema</button>
-      <button class="btn small" id="btnNew">Novo jogo (zera placar)</button>
+      <button class="btn small" id="btnNew">Recomeçar do zero</button>
       <button class="btn primary" id="btnStart" data-primary>Começar ▶</button>
     </div>
   </div>
   <div class="cfg">
     <div class="card">
-      <label>Finalistas (um por linha) · placar na TV, só pra final
-        <textarea id="cfgTeams" rows="8"></textarea>
-      </label>
       <div class="cols">
         <label>Tempo (s)<input id="cfgTime" type="number" min="0" step="10"></label>
         <label>Temas<input id="cfgNum" type="number" min="1" max="12"></label>
@@ -102,9 +83,8 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
       </label>
       <p class="nota" style="margin:0">
         <b>Como funciona:</b> sorteia os temas, depois a letra. Cada um joga por si e preenche o seu lado da folha
-        até o tempo acabar (ou alguém gritar STOP). Cada mesa pontua no papel, comparando só entre si:
-        <b>10</b> resposta só sua, <b>5</b> repetida, <b>0</b> vazia ou inválida. O primeiro de cada mesa vai pra final,
-        que é pontuada aqui na TV com o botão 📝.<br>
+        até o tempo acabar (ou alguém gritar STOP). A pontuação é toda no papel: cada mesa compara só entre si,
+        <b>10</b> resposta só sua, <b>5</b> repetida, <b>0</b> vazia ou inválida.<br>
         Tempo 0 = sem cronômetro. Letras e temas não se repetem até acabar o estoque.<br>
         Atalhos: <kbd>espaço</kbd> ação principal · <kbd>F</kbd> tela cheia.
       </p>
@@ -136,35 +116,6 @@ td.total { text-align: center; font-family: var(--fd); font-size: 1.2em; color: 
   <div class="hint"><kbd>espaço</kbd> ação principal · <kbd>F</kbd> tela cheia</div>
 </section>
 
-<!-- PONTUAÇÃO -->
-<section class="screen" id="score">
-  <div class="bar">
-    <h1>Pontuação · letra <span class="tag" id="sLetter">A</span></h1>
-    <div class="btns">
-      <button class="btn small" id="btnBackRound">← Voltar</button>
-      <button class="btn primary" id="btnConfirm" data-primary>Confirmar ✅</button>
-    </div>
-  </div>
-  <div class="legend">Toque para alternar:
-    <span><b style="background:var(--turq)">10</b> só ele</span>
-    <span><b style="background:var(--canary)">5</b> repetida</span>
-    <span><b style="background:var(--surface2);color:var(--muted)">–</b> vazia / inválida</span>
-  </div>
-  <div class="card score-wrap"><table id="sTable"></table></div>
-</section>
-
-<!-- PLACAR -->
-<section class="screen" id="board">
-  <div class="bar">
-    <h1><span class="tag">🏆 Placar</span> <span class="muted" id="bInfo" style="font-size:.5em"></span></h1>
-    <div class="btns">
-      <button class="btn small" id="btnSettings">⚙ Config</button>
-      <button class="btn primary" id="btnNext" data-primary>Próxima rodada ▶</button>
-    </div>
-  </div>
-  <div class="board" id="bList"></div>
-</section>
-
 <div class="flash" id="stopOverlay"><span>STOP!</span></div>
 
 <script>
@@ -194,10 +145,9 @@ const $ = s => document.querySelector(s);
 
 function defaults(){
   return {
-    teams: [1,2,3,4,5,6].map(i => ({name:"Finalista "+i, score:0, last:0})),
     time: 120, numCats: 5, letters: "ABCDEFGHIJLMNOPRSTUVZ",
     cats: DEFAULT_CATS.slice(), usedCats: [], usedLetters: [],
-    round: 1, current: null, phase: "setup", v: 3
+    round: 1, current: null, phase: "setup", v: 4
   };
 }
 function load(){ try { return JSON.parse(localStorage.getItem(KEY)); } catch(e){ return null; } }
@@ -213,6 +163,12 @@ if(S.v < 3){ // cada um por si: 5 temas por rodada, placar da TV só pra final
   S.numCats = 5;
   if(S.current && !S.current.ended) S.current = null;
   S.v = 3;
+}
+if(S.v < 4){ // TV só sorteia; pontuação toda no papel
+  delete S.teams;
+  if(S.current) delete S.current.points;
+  if(S.phase === "score" || S.phase === "board") S.phase = "round";
+  S.v = 4;
 }
 
 /* ---------- utils ---------- */
@@ -248,22 +204,17 @@ $("#btnTheme").onclick = () => {
 
 /* ---------- setup ---------- */
 function renderSetup(){
-  $("#cfgTeams").value = S.teams.map(t=>t.name).join("\n");
   $("#cfgTime").value = S.time;
   $("#cfgNum").value = S.numCats;
   $("#cfgRound").value = S.round;
   $("#cfgLetters").value = S.letters;
   $("#cfgCats").value = S.cats.join("\n");
   updateCatCount();
-  $("#btnStart").textContent = (S.teams.some(t=>t.score) || S.round>1) ? "Continuar ▶" : "Começar ▶";
+  $("#btnStart").textContent = (S.round>1 || S.current) ? "Continuar ▶" : "Começar ▶";
   show("setup");
 }
 function updateCatCount(){ $("#catCount").textContent = $("#cfgCats").value.split("\n").filter(l=>l.trim()).length + " temas"; }
 function applySetup(){
-  const names = $("#cfgTeams").value.split("\n").map(s=>s.trim()).filter(Boolean);
-  if(!names.length){ alert("Coloque pelo menos um finalista."); return false; }
-  const old = Object.fromEntries(S.teams.map(t=>[t.name,t]));
-  S.teams = names.map(n => old[n] ? old[n] : {name:n, score:0, last:0});
   S.time = Math.max(0, parseInt($("#cfgTime").value)||0);
   const num = Math.min(12, Math.max(1, parseInt($("#cfgNum").value)||5));
   if(num !== S.numCats) S.current = null;
@@ -275,16 +226,14 @@ function applySetup(){
   if(cats.length < S.numCats){ alert("Precisa de pelo menos "+S.numCats+" temas."); return false; }
   S.cats = cats;
   S.usedCats = S.usedCats.filter(c => cats.includes(c));
-  if(S.current && S.current.points && S.current.points.length !== S.teams.length) S.current.points = null;
   save(); return true;
 }
 $("#cfgCats").addEventListener("input", updateCatCount);
 $("#btnResetCats").onclick = () => { $("#cfgCats").value = DEFAULT_CATS.join("\n"); updateCatCount(); };
 $("#btnStart").onclick = () => { if(applySetup()) enterRound(); };
 $("#btnNew").onclick = () => {
-  if(!confirm("Zerar placar e começar do zero?")) return;
+  if(!confirm("Voltar pra rodada 1 e liberar todos os temas e letras?")) return;
   if(!applySetup()) return;
-  S.teams.forEach(t=>{t.score=0;t.last=0;});
   S.round = 1; S.current = null; S.usedCats = []; S.usedLetters = [];
   save(); enterRound();
 };
@@ -351,14 +300,13 @@ function renderRoundBtns(){
     paused:  `<button class="btn" data-a="stop">✋ Encerrar</button>
               <button class="btn primary" data-primary data-a="resume">▶ Continuar</button>`,
     ended:   `<button class="btn" data-a="settings">⚙ Config</button>
-              <button class="btn" data-a="score">📝 Pontuar na TV (final)</button>
               <button class="btn primary" data-primary data-a="next">▶ Próxima rodada</button>`
   }[rstate];
 }
 $("#rBtns").addEventListener("click", e => {
   const a = e.target.closest("[data-a]")?.dataset.a; if(!a) return;
   ({cats:drawCats, letter:drawLetter, start:startTimer, pause:pauseTimer, resume:resumeTimer,
-    stop:endRound, score:enterScore, next:nextRound, settings:renderSetup})[a]();
+    stop:endRound, next:nextRound, settings:renderSetup})[a]();
 });
 
 function spin(el, pool, final, total, onTick, done){
@@ -380,7 +328,7 @@ function drawCats(){
   if(ca.length < S.numCats){ S.usedCats = []; ca = S.cats.slice(); }
   const cats = shuffle(ca).slice(0, S.numCats);
   S.usedCats.push(...cats);
-  S.current = {cats, letter:null, ended:false, points:null};
+  S.current = {cats, letter:null, ended:false};
   save();
 
   rstate = "spin"; renderRoundBtns(); setLetter(null);
@@ -443,67 +391,11 @@ $("#stopOverlay").onclick = () => $("#stopOverlay").classList.remove("show");
 // pontuação feita no papel, em cada mesa
 function nextRound(){ S.current = null; S.round++; save(); enterRound(); }
 
-/* ---------- pontuação (final) ---------- */
-function enterScore(){
-  const c = S.current, n = c.cats.length;
-  if(!c.points || c.points.length !== S.teams.length) c.points = S.teams.map(() => Array(n).fill(0));
-  $("#sLetter").textContent = c.letter;
-  renderScore(); show("score");
-}
-function renderScore(){
-  const c = S.current;
-  let h = `<tr><th class="team">Finalista</th>${c.cats.map((x,i)=>`<th>${i+1}. ${esc(x)}</th>`).join("")}<th>Total</th></tr>`;
-  S.teams.forEach((t,ti) => {
-    h += `<tr><td class="team">${esc(t.name)}</td>` +
-      c.points[ti].map((v,ci)=>`<td><button class="pt" data-t="${ti}" data-c="${ci}" data-v="${v}">${v||"–"}</button></td>`).join("") +
-      `<td class="total">${c.points[ti].reduce((a,b)=>a+b,0)}</td></tr>`;
-  });
-  $("#sTable").innerHTML = h;
-}
-$("#sTable").addEventListener("click", e => {
-  const b = e.target.closest(".pt"); if(!b) return;
-  const p = S.current.points[b.dataset.t], ci = +b.dataset.c;
-  p[ci] = {0:10, 10:5, 5:0}[p[ci]];
-  tone(p[ci]===10?880:p[ci]===5?660:330,.06,"triangle",.15);
-  save(); renderScore();
-});
-$("#btnBackRound").onclick = enterRound;
-$("#btnConfirm").onclick = () => {
-  S.teams.forEach((t,i) => { t.last = S.current.points[i].reduce((a,b)=>a+b,0); t.score += t.last; });
-  S.current = null; S.round++;
-  save(); renderBoard(true);
-};
-
-/* ---------- placar ---------- */
-function renderBoard(celebrate){
-  const sorted = S.teams.map((t,i)=>({...t,i})).sort((a,b)=>b.score-a.score);
-  const max = Math.max(1, ...sorted.map(t=>t.score));
-  const medal = ["🥇","🥈","🥉"];
-  $("#bInfo").textContent = `após ${S.round-1} rodada${S.round-1===1?"":"s"}`;
-  $("#bList").innerHTML = sorted.map((t,r) => `
-    <div class="brow" data-pos="${t.score>0?r+1:0}" style="animation-delay:${r*.07}s">
-      <div class="rk">${medal[r] || (r+1)+"º"}</div>
-      <div class="nm" title="${esc(t.name)}">${esc(t.name)}</div>
-      <div class="track"><div class="fill" style="width:0" data-w="${100*Math.max(0,t.score)/max}"></div></div>
-      <div class="sc">${t.score}${t.last?`<span class="delta">+${t.last}</span>`:""}</div>
-      <div class="adj"><button data-i="${t.i}" data-d="-5">−</button><button data-i="${t.i}" data-d="5">+</button></div>
-    </div>`).join("");
-  show("board");
-  requestAnimationFrame(() => requestAnimationFrame(() =>
-    document.querySelectorAll(".fill").forEach(f => f.style.width = f.dataset.w + "%")));
-  if(celebrate) fanfare();
-}
-$("#bList").addEventListener("click", e => {
-  const b = e.target.closest("[data-d]"); if(!b) return;
-  S.teams[b.dataset.i].score += +b.dataset.d; save(); renderBoard(false);
-});
-$("#btnNext").onclick = enterRound;
 $("#btnMenu").onclick = () => {
   if((rstate === "running" || rstate === "paused") && !confirm("A rodada está valendo. Sair pro menu mesmo assim?")) return;
   if(rstate === "running") pauseTimer();
   clearInterval(timer.iv); renderSetup();
 };
-$("#btnSettings").onclick = renderSetup;
 
 /* ---------- atalhos ---------- */
 document.addEventListener("keydown", e => {
@@ -519,7 +411,7 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------- start ---------- */
-({setup:renderSetup, round:enterRound, score:() => S.current ? enterScore() : renderBoard(false), board:() => renderBoard(false)}[S.phase] || renderSetup)();
+({setup:renderSetup, round:enterRound}[S.phase] || renderSetup)();
 </script>
 </body>
 </html>
