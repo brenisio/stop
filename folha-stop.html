@@ -55,14 +55,14 @@ function linhas(n){
   return r + `<tr class="total"><td class="rot" colspan="${TEMAS+2}">Total</td><td class="pts"></td></tr>`;
 }
 const frente = `<section class="page">
-  <div class="head"><div class="logo">STOP!</div><span class="campo nome">Nome<i></i></span><span class="campo mesa">Mesa<i></i></span></div>
-  <div class="regras">Cada um por si. Os temas <b>1–5</b> são os da TV. Comparando só com a sua mesa:
+  <div class="head"><div class="logo">STOP!</div><span class="campo nome">Nome<i></i></span></div>
+  <div class="regras">Cada um por si. Os temas <b>1–5</b> são os sorteados no site (brenisio.github.io/stop). Comparando com quem joga com você:
     <b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia. Mesma ideia conta como repetida (dançar = dança).
-    Quem somar mais na mesa vai pra final, no verso.</div>
+    Quem somar mais vai pra final, no verso.</div>
   <table>${cols}${thead}${linhas(RODADAS)}</table>
 </section>`;
 const verso = `<section class="page final">
-  <div class="head"><div class="logo">FINAL</div><span class="campo nome">Nome<i></i></span><span class="campo mesa">Mesa<i></i></span></div>
+  <div class="head"><div class="logo">FINAL</div><span class="campo nome">Nome<i></i></span></div>
   <div class="regras">Só quem foi pra final joga deste lado. Mesmas regras, agora comparando com todos os finalistas:
     <b>10</b> só você · <b>5</b> repetida · <b>0</b> vazia.</div>
   <table>${cols}${thead}${linhas(FINAL)}</table>
