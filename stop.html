@@ -272,7 +272,12 @@ function drawCatList(cats){
 function fitCats(){
   const ul = $("#rCats"); if(!$("#round").classList.contains("active")) return;
   const items = [...ul.children];
-  const fits = () => items.every(li => li.scrollHeight <= li.clientHeight + 1 && li.scrollWidth <= li.clientWidth + 1);
+  // mede pelo layout (offset/scroll das linhas), que ignora o "pulo" da animação e o que vaza pra cima
+  const fits = () => items.every(li => {
+    const cs = getComputedStyle(li), rows = [...li.children];
+    const livre = li.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    return rows.reduce((a, r) => a + r.offsetHeight, 0) <= livre + 1 && rows.every(r => r.scrollWidth <= r.clientWidth + 1);
+  });
   let lo = 2, hi = 10;
   for(let k = 0; k < 14; k++){ const mid = (lo+hi)/2; ul.style.fontSize = mid + "vh"; if(fits()) lo = mid; else hi = mid; }
   ul.style.fontSize = lo + "vh";
@@ -356,7 +361,7 @@ function drawLetter(){
   rstate = "spin"; renderRoundBtns();
   const el = $("#rLetter"); el.classList.remove("espera");
   spin(el, letters, letter, 2600, () => tone(1200,.03,"square",.05), () => {
-    popAnim(el); fanfare(); rstate = "ready"; renderRoundBtns();
+    popAnim(el); fanfare(); startTimer(); // letra na tela = valendo
   });
 }
 function startTimer(){
