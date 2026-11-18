@@ -4,17 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Stop</title>
-<meta name="description" content="Stop na TV, sem celular: sorteia os temas e a letra com cronômetro, e cada um joga no papel.">
+<meta name="description" content="Stop que só precisa de papel e caneta: sorteia os temas e a letra com cronômetro. Abre no celular, no PC ou na TV.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Stop">
-<meta property="og:title" content="STOP! Stop na TV, sem celular">
-<meta property="og:description" content="Sorteia os temas e a letra com cronômetro. Cada um joga no papel. É só abrir no computador ligado na TV.">
+<meta property="og:title" content="STOP! Só precisa de papel e caneta">
+<meta property="og:description" content="Sorteia os temas e a letra com cronômetro. Abre no celular, no PC ou na TV e cada um joga no papel.">
 <meta property="og:url" content="https://brenisio.github.io/stop/stop.html">
 <meta property="og:image" content="https://brenisio.github.io/stop/og-stop.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="icone-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
+<link rel="apple-touch-icon" href="icone-180.png">
+<meta name="theme-color" content="#17142a">
 <script>
   (function(){
     var sis = matchMedia('(prefers-color-scheme: dark)');
@@ -251,7 +255,7 @@ function show(id){
 }
 // compartilhar: menu nativo (celular) ou WhatsApp Web; o preview vem das tags og: acima
 $("#btnShare").onclick = async () => {
-  const url = "https://brenisio.github.io/stop/stop.html", text = "Bora jogar Stop? Abre na TV:";
+  const url = "https://brenisio.github.io/stop/stop.html", text = "Bora jogar Stop? Só precisa de papel e caneta:";
   if(navigator.share){ try { await navigator.share({title: "Stop", text, url}); return; } catch(e){ if(e.name === "AbortError") return; } }
   open("https://wa.me/?text=" + encodeURIComponent(text + " " + url), "_blank", "noopener");
 };
